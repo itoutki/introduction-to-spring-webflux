@@ -442,8 +442,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_spring_webfluxの特徴1_ノンブロッキングioとイベントループ">1. Spring WebFluxの特徴(1) ノンブロッキングI/Oとイベントループ</a></li>
-<li><a href="#_spring_webfluxの特徴2_リアクティブプログラミング">2. Spring WebFluxの特徴（2) リアクティブプログラミング</a></li>
+<li><a href="#_spring_webfluxの概要特徴">1. Spring WebFluxの概要・特徴</a></li>
+<li><a href="#_spring_webfluxのユースケース事例">2. Spring WebFluxのユースケース・事例</a></li>
 <li><a href="#_spring_webfluxによるhello_worldアプリケーションの作成">3. Spring WebFluxによるHello Worldアプリケーションの作成</a></li>
 </ul>
 </div>
@@ -459,26 +459,63 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 高い処理能力（高スループット）も求められています。</p>
 </div>
 <div class="paragraph">
-<p>Javaで高いリソース効率性と高い処理能力を持つアプリケーションを開発するためのフレームワークとして、
-Spring Frameworkファミリーの一つであるSpring WebFluxが注目を集めています。</p>
+<p>Javaで高いリソース効率性と高い処理能力を持つアプリケーションを開発するためのフレームワークの一つとして、
+Spring FrameworkファミリーのSpring WebFluxがあります。</p>
 </div>
 <div class="paragraph">
 <p>本連載では、Spring WebFluxによるアプリケーションの作り方を始め、
 Spring WebFluxを理解する上で重要となるリアクティブプログラミングや、
-Spring WebFluxベースのHTTPクライアントであるWebClientなどを解説していきます。</p>
+Spring WebFluxベースのHTTPクライアントであるWebClient、
+Spring WebFluxと親和性の高いデータベースアクセスの仕組みであるR2DBCを解説していきます。</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_spring_webfluxの特徴1_ノンブロッキングioとイベントループ"><a class="anchor" href="#_spring_webfluxの特徴1_ノンブロッキングioとイベントループ"></a>1. Spring WebFluxの特徴(1) ノンブロッキングI/Oとイベントループ</h2>
+<h2 id="_spring_webfluxの概要特徴"><a class="anchor" href="#_spring_webfluxの概要特徴"></a>1. Spring WebFluxの概要・特徴</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Spring FrameworkにはWebアプリケーションを作るためのフレームワークとしてSpring MVCとSpring WebFluxの2つがあります。
+Spring MVCとSpring WebFluxの技術スタックには下図のような違いがあります。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/01/00_01_framework_stack.png" alt="00 01 framework stack"></span></p>
+</div>
+<div class="paragraph">
+<p>Spring MVCはサーブレットをベースとしており、Tomcatなどのサーブレットコンテナの上で動作します。
+それに対して、Spring WebFluxはNettyなどのノンブロッキングI/Oベースのアプリケーションサーバの上で動作します。
+ノンブロッキングI/Oとは、ネットワークアクセスやDBアクセスなどのI/O処理の呼び出しに対して、
+読み書きができる場合は処理を行い、読み書きができない場合には即座に処理を戻すという仕組みです。
+読み書きができない場合に別の処理を行わせることができるため、CPUを効率的に利用することが可能になります。
+Spring WebFluxでは、ノンブロッキングI/Oの仕組みを活かし、1つのスレッドで複数のリクエストを処理します。
+そのため、同時処理数分だけスレッドを必要とするSpring MVCなどと比べて、必要となるスレッド数が少なくなり、
+必要となるメモリサイズも小さくなります。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/01/00_02_request_processing.png" alt="00 02 request processing"></span></p>
+</div>
+<div class="paragraph">
+<p>また、ノンブロッキングな処理を実装しやすくするための仕組みとして、
+Spring WebFluxではReactorによるリアクティブプログラミングを採用しています。
+リアクティブプログラミングとは、データに着目したイベント駆動型のプログラミングの一種で、
+通知されるデータを受け取って処理を行うハンドラを実装することによって連続的なデータを処理する手法です。
+Reactorはリアクティブプログラミングを実現するためのライブラリの一つであり、
+ノンブロッキングで非同期なリアクティブプログラミングの仕組みを提供しています。
+Spring WebFluxではReactorのAPIを使うことによって低レベルなノンブロッキングI/Oの仕組みを隠蔽し、
+より抽象度の高い形でノンブロッキングな処理を実装できるようにようにしています。</p>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_spring_webfluxの特徴2_リアクティブプログラミング"><a class="anchor" href="#_spring_webfluxの特徴2_リアクティブプログラミング"></a>2. Spring WebFluxの特徴（2) リアクティブプログラミング</h2>
+<h2 id="_spring_webfluxのユースケース事例"><a class="anchor" href="#_spring_webfluxのユースケース事例"></a>2. Spring WebFluxのユースケース・事例</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Spring WebFluxは高いリソース効率性と高スループットが特徴となっています。
+そのため、冒頭でも述べたようにマイクロサービスアーキテクチャのシステムに適しているといえます。
+国内では、クックパッドのシステムにおいてAPIオーケストレーション層の実装として採用されている<a href="https://techlife.cookpad.com/entry/2018-odaiba-strategy">事例</a>が紹介されています。
+また、マイクロサービスアーキテクチャではなくても、同時接続数が多いシステムであれば、Spring WebFluxを採用することでインフラコストを抑えることができます。
+例えば、LINEの内部では一部Spring WebFluxを使用しているとの<a href="https://speakerdeck.com/line_developers/examples-of-using-spring-and-webflux-in-the-chat-system-for-line-official-accounts">事例</a>が発表されています。
+そのほか、同時接続数が多いものとしてはIoTの領域において多数のセンサデータを処理するシステムなどが挙げられます。</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -707,7 +744,7 @@ Hello World!</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-10-30 05:29:56 UTC
+Last updated 2020-11-15 14:35:43 UTC
 </div>
 </div>
 </body>
