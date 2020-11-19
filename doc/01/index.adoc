@@ -7,6 +7,7 @@
 
 = 01 マイクロサービス時代のフレームワーク Spring WebFluxとは
 
+
 昨今、マイクロサービスアーキテクチャによるアプケーション開発がとても注目を集めています。
 マイクロサービスアーキテクチャでは、文字通り小さなサービスを多数組み合わせて1つのアプリケーションを構成することから、
 個々のサービスには高いリソース効率性が求められています。
@@ -20,6 +21,12 @@ Spring FrameworkファミリーのSpring WebFluxがあります。
 Spring WebFluxを理解する上で重要となるリアクティブプログラミングや、
 Spring WebFluxベースのHTTPクライアントであるWebClient、
 Spring WebFluxと親和性の高いデータベースアクセスの仕組みであるR2DBCを解説していきます。
+
+なお、本連載では、Java・Spring Framework（Spring MVC）での開発経験がある開発者を想定しています。
+Spring Frameworkの開発経験がない場合には、
+NTTデータが公開している link:https://terasolunaorg.github.io/guideline/5.6.0.RELEASE/ja/[TERASOLUNA Server Framework Developement Guideline] のチュートリアルを実施することをお勧めします。
+TERASOLUNA Server Framework Development Guidelineは、
+Spring Frameworkを使った開発のベストプラクティスをまとめたガイドラインになっています。
 
 
 == Spring WebFluxの概要・特徴
