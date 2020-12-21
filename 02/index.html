@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>02 リアクティブプログラミング入門</title>
+<title>02 Spring WebFluxの要 リアクティブプログラミング入門</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -436,16 +436,307 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>02 リアクティブプログラミング入門</h1>
+<h1>02 Spring WebFluxの要 リアクティブプログラミング入門</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_リアクティブプログラミングの基本">1. リアクティブプログラミングの基本</a></li>
+<li><a href="#_リアクティブプログラミングとreactive_streams">2. リアクティブプログラミングとReactive Streams</a></li>
+<li><a href="#_reactor入門">3. Reactor入門</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>今回は、Spring WebFluxを使う上で欠かせない要素である、リアクティブプログラミングおよびReactorについて解説します。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_リアクティブプログラミングの基本"><a class="anchor" href="#_リアクティブプログラミングの基本"></a>1. リアクティブプログラミングの基本</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>リアクティブプログラミングとは、データに着目したイベント駆動型のプログラミングの一種で、
+通知されるデータを受け取って処理を行うハンドラを実装することによって連続的なデータを処理するプログラミング手法です。</p>
+</div>
+<div class="paragraph">
+<p>リアクティブプログラミングを用いている身近な例としてよく挙げられるものが表計算ソフトです。
+ここでは、表計算ソフトの例を使い、リアクティブプログラミングの基本的な考え方について解説します。</p>
+</div>
+<div class="paragraph">
+<p>下図のように、表計算ソフトのシート上に、セルA、セルB、セルCがあるとします。
+この時、セルCには「セルA + セルB」という計算式が定義されています。
+この計算式が「通知されるデータを受け取って処理を行うハンドラ」にあたります。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/02/reactive_spredsheet_01.png" alt="reactive spredsheet 01"></span></p>
+</div>
+<div class="paragraph">
+<p>では、次にセルAとセルBにそれぞれ「1」「2」という数値を入力した場合を考えてみましょう。
+セルAとセルBに数値が入力されると、セルAとセルBの値が変わったというイベントが発生します。
+セルCはセルAとセルBの変更された値を受け取り、定義された計算式に基づく計算を実行し、結果として「3」を表示します。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/02/reactive_spredsheet_02.png" alt="reactive spredsheet 02"></span></p>
+</div>
+<div class="paragraph">
+<p>続いて、セルAの値を「5」に変更してみるとどうなるでしょうか。
+この場合、セルAの値が「5」に変わったというイベントが発生し、セルCは計算を再度実行します。
+そして、新しい結果として「7」を表示します。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/02/reactive_spredsheet_03.png" alt="reactive spredsheet 03"></span></p>
+</div>
+<div class="paragraph">
+<p>このように、データの生成・変更といったイベントに応じて処理を行うことから
+リアクティブ（＝反応的）プログラミングと呼ばれています。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_リアクティブプログラミングとreactive_streams"><a class="anchor" href="#_リアクティブプログラミングとreactive_streams"></a>2. リアクティブプログラミングとReactive Streams</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>リアクティブプログラミングを実現するライブラリには様々なものがあります。
+主要なライブラリとしては以下のようなものがあります。</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ライブラリ</th>
+<th class="tableblock halign-left valign-top">概要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reactive Extensions（ReactiveX）</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Microsoftが公開した.NET Frameworkのライブラリ。<br>
+  現在はReactiveXとしてOSS化されており、後述のRxJavaのほか、Javascript向けやSwift向けの実装も提供しています。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RxJava</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reactive ExtensionsをJavaに移植したもの。<br>
+  現在はReactiveXの一部となっています。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Akka</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Lightbend社が開発している平行・分散アプリケーションのためのツールキット。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Eclipse Vert.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">イベントドリブンなアプリケーションフレームワーク。<br>
+  JVM上で動作しますが、Java以外にもJavaScriptやRubyなどで実装できます。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reactor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VMWare（旧Pivotal）によって開発されているリアクティブプログラミングのライブラリ。<br>
+  Spring WebFluxの内部で使用されています。</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>当初はそれぞれ個別に実装が進められていましたが、
+やがて共通のAPIを策定することになりました。
+それがReactive Streamsです。</p>
+</div>
+<div class="paragraph">
+<p>Reactive Streamsは、API定義、仕様、TCK（Technology Compatibility Kit、実装が仕様を満たしていることを確認するためのテストコード群）からなり、
+Java向けのAPIのほか、Javascriptや.NET、Swift向けのものも提供されています。
+Java向けにはインタフェースの形でAPIが提供されています。</p>
+</div>
+<div class="paragraph">
+<p>Reactive Streamsの大きな特徴はバックプレッシャーという仕組みを定義していることです。
+バックプレッシャーとは、データを受け取る側がデータの送信元に対して送信量を制御する仕組みのことです。
+データの送信元よりもデータを受け取る側の処理速度が遅いようなケースにおいて、
+受け取る側は自身が処理可能なデータ量を送信元に通知し、送信元は通知内容に基づいてデータを送信することによって、
+データを溢れさせずに処理することが可能になります。</p>
+</div>
+<div class="paragraph">
+<p>それでは、Reactive StreamsのAPI仕様について詳しく見てみましょう。
+Reactive StreamsのAPI仕様は、Publisher、Subscriber、Subscription、そしてProcessorという、
+4つのAPIコンポーネントからなる非常にシンプルなものとなっています。
+Java向けのAPIとしては以下の4つのインタフェースとして提供されています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public interface Publisher&lt;T&gt; {
+    public void subscribe(Subscriber&lt;? super T&gt; s);
+}
 
+public interface Subscriber&lt;T&gt; {
+    public void onSubscribe(Subscription s);
+    public void onNext(T t);
+    public void onError(Throwable t);
+    public void onComplete();
+}
+
+public interface Subscription {
+    public void request(long n);
+    public void cancel();
+}
+
+public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt;R&gt; {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>これらのAPIコンポーネントの機能は以下の通りです。</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">APIコンポーネント</th>
+<th class="tableblock halign-left valign-top">概要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Publisher</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">データの送信元となるコンポーネント。<br>
+  subscribeメソッドによって、Publisherがデータを送信する先のSubscriberを設定します。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subscriber</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">データを受け取る側となるコンポーネント。<br>
+  SubscriberをPublisherに設定すると、onSubscribeメソッドが呼ばれ、Subscriptionを受け取ります。<br>
+  onNextメソッドを通じてデータを受け取ります。<br>
+  全てのデータを受信すると、最後にonCompleteメソッドが呼ばれます。<br>
+  途中でエラーが発生した場合には、onErrorメソッドが呼ばれます。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subscription</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PublisherとSubscriberを仲介する役目のコンポーネント。<br>
+  requestメソッドによって、Subscriberは受け取り可能なデータ数を指定することができます。（バックプレッシャー）<br>
+  cancelメソッドによって、Subscriberはデータの受け取りを中止することができます。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Processor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PublisherとSubscriberの両方の機能を持つコンポーネント。</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>例えば、SubscriberがPublisherからデータ「A」「B」「C」を受け取る場合には、
+下図のようなシーケンスで処理が行われることになります。
+この例では、Subscriptionのrequestメソッドによるバックプレッシャーの機能を使い、
+2個ずつデータを送信するように通知しています。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/02/reactive_streams_sequence.png" alt="reactive streams sequence"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_reactor入門"><a class="anchor" href="#_reactor入門"></a>3. Reactor入門</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ここからは、Spring WebFluxにも使われているリアクティブプログラミングのライブラリ、Reactorについて解説していきます。
+ReactorはReactive Streamsの仕様を実装しつつも、関数型の考え方・インタフェースを取り入れ、
+Stream APIのようにラムダ式を引数にしてデータのフィルタリングや変換などの処理を実装できるAPIを提供するライブラリです。</p>
+</div>
+<div class="paragraph">
+<p>Reactorを理解する上で重要となるクラスがFluxとMonoです。</p>
+</div>
+<div class="paragraph">
+<p>FluxはReactive StreamsにおけるPublisherインタフェースを実装しており、0個以上のデータを持つデータ列を扱うためのクラスです。
+以下のように、justメソッドを使うことでFluxを生成することができます。
+この例では、1から5までの整数データを持つFluxを生成しています。
+生成したFluxに対して、subscribeメソッドを使ってデータを受け取った時の処理を定義することができます。
+Reactorでは、ラムダ関数をsubscribeメソッドに渡すことで、Reactive StreamsにおけるSubscriberを内部的に生成することができるようになっています。
+この例では、受け取った整数データを標準出力に1行ずつ表示しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Flux&lt;Integer&gt; input = Flux.just(1, 2, 3, 4, 5);
+input.subscribe(d -&gt; System.out.println(d));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>MonoもFlux同様Publisherインタフェースを実装したクラスですが、0個または1個のデータを扱うためのクラスです。
+MonoにもFluxと同様にjustメソッドやsubscribeメソッドが用意されており、以下のように使うことができます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Mono.just("Hello, Mono")
+    .subscribe(str -&gt; System.out.println(str));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>FluxとMonoにはオペレータと呼ばれる様々なメソッドが用意されており、
+オペレータをメソッドチェーンで繋げていくことにより処理を実装します。
+オペレータは基本的にラムダ関数を引数として受け取り、ラムダ関数で定義した内容に基づいた処理を行います。
+ここでは、よく使うオペレータをいくつか紹介します。</p>
+</div>
+<div class="paragraph">
+<p>mapは個々のデータに対して処理を行うためのオペレータです。
+以下の例では、受け取った整数に対して2倍した値を返す処理を定義しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Flux.just(1, 2, 3, 4, 5)
+  .map(i -&gt; i * 2)
+  .subscribe(d -&gt; System.out.println(d));
+
+Mono.just(10)
+  .map(i -&gt; i * 2)
+  .subscribe(d -&gt; System.out.println(d));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>flatMapはmapと同様に個々のデータに対して処理を行いますが、結果としてFluxやMonoなどを返す処理を行うためのオペレータです。
+例えば、Fluxの個々の値を元にAPIリクエストなどの非同期処理を実行したい場合などに使用します。
+以下の例では、先ほどのmapの例と同様、受け取った整数に対して2倍した値を返す処理を定義していますが、
+ラムダ関数の返り値がMonoとなっているため、mapではなくflatMapを使用しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Flux.just(1, 2, 3, 4, 5)
+  .flatMap(i -&gt; Mono.just(i * 2))
+  .subscribe(d -&gt; System.out.println(d));
+
+Mono.just(1, 2, 3, 4, 5)
+  .flatMap(i -&gt; Mono.just(i * 2))
+  .subscribe(d -&gt; System.out.println(d));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>filterは条件に合致するデータのみを抽出するためのオペレータです。
+以下の例では、受け取った整数に対して、2で割り切れるもののみを抽出する処理を定義しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Flux.just(1, 2, 3, 4, 5)
+  .filter(i -&gt; i % 2 == 0)
+  .subscribe(d -&gt; System.out.println(d));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ここで紹介した以外のオペレータについて知りたい場合には <a href="https://projectreactor.io/docs/core/release/reference/">公式ドキュメント</a> を参照してください。
+また、公式ドキュメントでは実現したいことから逆引きでオペレータを見つけることもできます。</p>
+</div>
+<div class="paragraph">
+<p>今回は、Spring WebFluxの要となるリアクティブプログラミングの考え方、リアクティブプログラミングの標準であるReactive Streams、
+そしてSpring WebFlux内部で使用されているリアクティブプログラミングのライブラリであるReactorについて解説しました。
+次回は、Spring WebFluxに内包された次世代のHTTPクライアント、WebClientについて解説します。</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-12-02 05:09:16 UTC
+Last updated 2020-12-21 14:40:38 UTC
 </div>
 </div>
 </body>
