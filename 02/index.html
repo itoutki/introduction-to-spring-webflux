@@ -468,28 +468,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 ここでは、表計算ソフトの例を使い、リアクティブプログラミングの基本的な考え方について解説します。</p>
 </div>
 <div class="paragraph">
-<p>下図のように、表計算ソフトのシート上に、セルA、セルB、セルCがあるとします。
-この時、セルCには「セルA + セルB」という計算式が定義されています。
+<p>下図のように、表計算ソフトのシート上に、セルA、セルBがあるとします。
+この時、セルCには「セルA * 2」という計算式が定義されています。
 この計算式が「通知されるデータを受け取って処理を行うハンドラ」にあたります。</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="./../images/02/reactive_spreadsheet_01.png" alt="reactive spreadsheet 01"></span></p>
+<p><span class="image"><img src="./../images/02/reactive_spreadsheet_04.png" alt="reactive spreadsheet 04"></span></p>
 </div>
 <div class="paragraph">
-<p>では、次にセルAとセルBにそれぞれ「1」「2」という数値を入力した場合を考えてみましょう。
-セルAとセルBに数値が入力されると、セルAとセルBの値が変わったというイベントが発生します。
-セルCはセルAとセルBの変更された値を受け取り、定義された計算式に基づく計算を実行し、結果として「3」を表示します。</p>
+<p>では、次にセルAに「1」という数値を入力した場合を考えてみましょう。
+セルAに数値が入力されると、セルAの値が変わったというイベントが発生します。
+セルBはセルAの変更された値を受け取り、定義された計算式に基づく計算を実行し、結果として「2」を表示します。</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="./../images/02/reactive_spreadsheet_02.png" alt="reactive spreadsheet 02"></span></p>
+<p><span class="image"><img src="./../images/02/reactive_spreadsheet_05.png" alt="reactive spreadsheet 05"></span></p>
 </div>
 <div class="paragraph">
 <p>続いて、セルAの値を「5」に変更してみるとどうなるでしょうか。
-この場合、セルAの値が「5」に変わったというイベントが発生し、セルCは計算を再度実行します。
-そして、新しい結果として「7」を表示します。</p>
+この場合、セルAの値が「5」に変わったというイベントが発生し、セルBは計算を再度実行します。
+そして、新しい結果として「10」を表示します。</p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="./../images/02/reactive_spreadsheet_03.png" alt="reactive spreadsheet 03"></span></p>
+<p><span class="image"><img src="./../images/02/reactive_spreadsheet_06.png" alt="reactive spreadsheet 06"></span></p>
 </div>
 <div class="paragraph">
 <p>このように、データの生成・変更といったイベントに応じて処理を行うことから
@@ -628,13 +628,39 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
 </tbody>
 </table>
 <div class="paragraph">
-<p>例えば、SubscriberがPublisherからデータ「A」「B」「C」を受け取る場合には、
-下図のようなシーケンスで処理が行われることになります。
-この例では、Subscriptionのrequestメソッドによるバックプレッシャーの機能を使い、
-2個ずつデータを送信するように通知しています。</p>
+<p>では、先ほどの表計算ソフトの例を使って、Reactive Streamsにおいてどのような流れで処理が行われるのか見てみましょう。<br>
+セルAはデータの送信元にあたるため、Reactive StreamsにおけるPublisherと考えることができます。<br>
+セルBはデータを受け取る側にあたるため、Reactive StreamsにおけるSubscriberと考えることができます。<br></p>
 </div>
 <div class="paragraph">
-<p><span class="image"><img src="./../images/02/reactive_streams_sequence.png" alt="reactive streams sequence"></span></p>
+<p>この例では計算式で直接セルAを指定していますが、
+Reactive Streams流に読み替えると、受け取った値を2倍して表示するSubscriberの処理（SubscriberのonNextメソッド）を定義し、
+SubscriberをPublisherに登録する、となります。<br>
+すると、内部的にはPublisherはSubscriptionを生成し、
+SubscriberであるセルBに対してonSubscribeメソッドを通じてsubscriptionを渡します。<br>
+セルBはSubscrptionのrequestメソッドを通じてデータを1個送信するよう要求します。<br></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/02/reactive_streams_sequence_01.png" alt="reactive streams sequence 01"></span></p>
+</div>
+<div class="paragraph">
+<p>セルAに「1」を入力するという操作はPublisherであるセルAから「1」というデータを送信する処理に該当します。<br>
+この場合、セルAはSubscriptionを通じてセルBのonNextメソッドに「1」というデータを渡します。<br>
+セルBのonNextメソッドには「受け取った値を2倍して表示する」という処理が定義されているため、
+その処理が実行されることによりセルBに「2」が表示されることになります。<br>
+また、セルBでは要求した1個のデータを受け取ったため、再度requestメソッドで次のデータを送信するよう要求します。<br></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/02/reactive_streams_sequence_02.png" alt="reactive streams sequence 02"></span></p>
+</div>
+<div class="paragraph">
+<p>セルAに「5」を入力すると先ほどと同様の処理が行われ、セルBに「10」が表示されます。<br>
+表計算ソフトではセルに入力する値を変えることで無限にデータを送信することが可能ですが、
+仮に入力値が「1」と「5」の2個だけであるとすると、
+セルAはSubscriptionを通じてSubscriberのonCompleteメソッドを呼び出し、データ送信が完了したことを通知します。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/02/reactive_streams_sequence_03.png" alt="reactive streams sequence 03"></span></p>
 </div>
 </div>
 </div>
@@ -650,17 +676,17 @@ Stream APIのようにラムダ式を引数にしてデータのフィルタリ�
 <p>Reactorを理解する上で重要となるクラスがFluxとMonoです。</p>
 </div>
 <div class="paragraph">
-<p>FluxはReactive StreamsにおけるPublisherインタフェースを実装しており、0個以上のデータを持つデータ列を扱うためのクラスです。
-以下のように、justメソッドを使うことでFluxを生成することができます。
-この例では、1から5までの整数データを持つFluxを生成しています。
-生成したFluxのsubscribeメソッドを使ってデータを受け取った時の処理を定義することができます。
-Reactorでは、ラムダ関数をsubscribeメソッドに渡すことで、Reactive StreamsにおけるSubscriberを内部的に生成することができるようになっています。
-この例では、受け取った整数データを標準出力に1行ずつ表示しています。</p>
+<p>FluxはReactive StreamsにおけるPublisherインタフェースを実装しており、0個以上のデータを持つデータ列を扱うためのクラスです。<br>
+以下のように、justメソッドを使うことでFluxを生成することができます。<br>
+この例では、これまでの例で出てきたような「1」と「5」という2つの整数データを持つFluxを生成しています。<br>
+生成したFluxのsubscribeメソッドを使ってデータを受け取った時の処理を定義することができます。<br>
+Reactorでは、ラムダ関数をsubscribeメソッドに渡すことで、Reactive StreamsにおけるSubscriberを内部的に生成することができるようになっています。<br>
+「受け取った値を2倍して表示する」Subscriberを実装すると以下のようになります。</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">Flux&lt;Integer&gt; input = Flux.just(1, 2, 3, 4, 5);
-input.subscribe(d -&gt; System.out.println(d));</code></pre>
+<pre class="highlight"><code class="language-java" data-lang="java">Flux&lt;Integer&gt; input = Flux.just(1, 5);
+input.subscribe(d -&gt; System.out.println(d * 2));</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -676,7 +702,7 @@ MonoにもFluxと同様にjustメソッドやsubscribeメソッドが用意さ�
 <div class="paragraph">
 <p>FluxとMonoにはオペレータと呼ばれる様々なメソッドが用意されており、
 オペレータをメソッドチェーンで繋げていくことによって処理を実装します。
-オペレータは基本的にラムダ関数を引数として受け取り、ラムダ関数で定義した内容に基づいた処理を行います。
+オペレータは基本的にラムダ関数を引数として受け取り、ラムダ関数で定義した内容に基づいた処理を行うPublisherを生成します。
 ここでは、よく使うオペレータをいくつか紹介します。</p>
 </div>
 <div class="paragraph">
@@ -736,7 +762,7 @@ Mono.just(1, 2, 3, 4, 5)
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-12-21 14:58:02 UTC
+Last updated 2020-12-24 05:02:22 UTC
 </div>
 </div>
 </body>
