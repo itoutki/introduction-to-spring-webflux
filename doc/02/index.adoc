@@ -221,7 +221,7 @@ Mono.just(10)
   .subscribe(d -> System.out.println(d));
 ----
 
-=== flatMap：Fluxの個々の値を基に非同期処理を実行
+=== flatMap：個々のデータに対して非同期処理を実行
 
 「flatMap」はmapと同様に個々のデータに対して処理を行いますが、結果としてFluxやMonoなどを返す処理を行うためのオペレータです。
 例えば、Fluxの個々の値を基にAPIリクエストなどの非同期処理を実行したい場合などに使用します。
