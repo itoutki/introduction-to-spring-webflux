@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.10">
+<meta name="generator" content="Asciidoctor 2.0.12">
 <title>03 リアクティブなHTTPクライアント WebClient入門</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -47,7 +47,7 @@ textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
 *,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
 html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
 a:hover{cursor:pointer}
 img,object,embed{max-width:100%;height:auto}
 object,embed{height:100%}
@@ -62,10 +62,8 @@ img{-ms-interpolation-mode:bicubic}
 img,object,svg{display:inline-block;vertical-align:middle}
 textarea{height:auto;min-height:50px}
 select{width:100%}
-.center{margin-left:auto;margin-right:auto}
-.stretch{width:100%}
 .subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
-div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
 a{color:#2156a5;text-decoration:underline;line-height:inherit}
 a:hover,a:focus{color:#1d4b8f}
 a img{border:0}
@@ -105,19 +103,22 @@ h1{font-size:2.75em}
 h2{font-size:2.3125em}
 h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
 h4{font-size:1.4375em}}
-table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede;word-wrap:normal}
 table thead,table tfoot{background:#f7f8f7}
 table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
 table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
 table tr.even,table tr.alt{background:#f8f8f7}
-table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
 h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
 h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
 .clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
 .clearfix::after,.float-group::after{clear:both}
-:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
-:not(pre)>code.nobreak{word-wrap:normal}
-:not(pre)>code.nowrap{white-space:nowrap}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
 pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
 pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
 pre>code{display:block}
@@ -182,7 +183,7 @@ body.toc2.toc-right{padding-left:0;padding-right:20em}}
 #content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
 #content #toc>:first-child{margin-top:0}
 #content #toc>:last-child{margin-bottom:0}
-#footer{max-width:100%;background:rgba(0,0,0,.8);padding:1.25em}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
 #footer-text{color:rgba(255,255,255,.8);line-height:1.44}
 #content{margin-bottom:.625em}
 .sect1{padding-bottom:.625em}
@@ -205,7 +206,7 @@ table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font
 .admonitionblock>table td.icon{text-align:center;width:80px}
 .admonitionblock>table td.icon img{max-width:none}
 .admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
-.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
 .exampleblock>.content>:first-child{margin-top:0}
@@ -215,7 +216,7 @@ table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font
 .sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
 .exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
-.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
 .literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class="highlight"],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
@@ -261,21 +262,20 @@ pre.pygments .lineno::before{content:"";margin-right:-.125em}
 .quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
 .quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
 .quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
-table.tableblock{max-width:100%;border-collapse:separate}
 p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
 td.tableblock>.content>:last-child{margin-bottom:-1.25em}
-td.tableblock>.content>:last-child.sidebarblock{margin-bottom:0}
 table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
-table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
-table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
-table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
-table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px}
-table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0}
-table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
-table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
 table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
 table.frame-sides{border-width:0 1px}
-table.frame-topbot,table.frame-ends{border-width:1px 0}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
 table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
 th.halign-left,td.halign-left{text-align:left}
 th.halign-right,td.halign-right{text-align:right}
@@ -284,7 +284,7 @@ th.valign-top,td.valign-top{vertical-align:top}
 th.valign-bottom,td.valign-bottom{vertical-align:bottom}
 th.valign-middle,td.valign-middle{vertical-align:middle}
 table thead th,table tfoot th{font-weight:bold}
-tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th{background:#f7f8f7}
 tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
 p.tableblock>code:only-child{background:none;padding:0}
 p.tableblock{font-size:1em}
@@ -313,6 +313,7 @@ ol.lowergreek{list-style-type:lower-greek}
 .hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
 td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
 td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
 .literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
 .colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
 .colist td:not([class]):first-child img{max-width:none}
@@ -385,7 +386,7 @@ a span.icon>.fa{cursor:inherit}
 .admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
 .admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
 .admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
-.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:50%;border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
 .conum[data-value] *{color:#fff!important}
 .conum[data-value]+b{display:none}
 .conum[data-value]::after{content:attr(data-value)}
@@ -412,6 +413,7 @@ thead{display:table-header-group}
 svg{max-width:100%}
 p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
 h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
 #toc,.sidebarblock,.exampleblock>.content{background:none!important}
 #toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
 body.book #header{text-align:center}
@@ -436,16 +438,365 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
 <h1>03 リアクティブなHTTPクライアント WebClient入門</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_webclientの基本">1. WebClientの基本</a>
+<ul class="sectlevel2">
+<li><a href="#_webclientによるgetリクエストの実装">1.1. WebClientによるGETリクエストの実装</a></li>
+<li><a href="#_webclientによるpostリクエストの実装">1.2. WebClientによるPOSTリクエストの実装</a></li>
+</ul>
+</li>
+<li><a href="#_webclientの実践的な使い方">2. WebClientの実践的な使い方</a>
+<ul class="sectlevel2">
+<li><a href="#_webclientのカスタマイズ方法">2.1. WebClientのカスタマイズ方法</a></li>
+<li><a href="#_タイムアウトの設定">2.2. タイムアウトの設定</a></li>
+<li><a href="#_filterによる共通処理の適用">2.3. filterによる共通処理の適用</a></li>
+<li><a href="#_エラーハンドリング">2.4. エラーハンドリング</a></li>
+<li><a href="#_リトライ">2.5. リトライ</a></li>
+</ul>
+</li>
+<li><a href="#_まとめ">3. まとめ</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>今回は、Spring WebFluxに内包されたリアクティブなHTTPクライアント、WebClientについて解説します。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_webclientの基本"><a class="anchor" href="#_webclientの基本"></a>1. WebClientの基本</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>WebClientはノンブロッキングなHTTPリクエストを実現するための機能です。
+Spring WebFluxと同様にReactorベースのFluent APIを備えており、メソッドチェインによってHTTPリクエストを実現できます。</p>
+</div>
+<div class="paragraph">
+<p>なお、WebClientはSpring WebFluxに内包された機能ではありますが、Spring MVCと組み合わせて使用することも可能です。
+Spring MVCではRestTemplateというHTTPクライアントを提供していますが、
+RestTemplateはSpring Framework 5.0でメンテナンスモードとなり、今後はWebClientを使用することを推奨しています。</p>
+</div>
+<div class="paragraph">
+<p>Spring Bootを利用する場合、WebClientを生成するためのBuilderがあらかじめBean定義されています。
+そのため、以下のように実装することでWebClientのインスタンスを得ることができます。
+このWebClientインスタンスを使って、各種リクエスト処理を実行します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Component
+public class WebClientSample {
+    private final WebClient webClient;
 
+    public WebClientSample(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.build();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_webclientによるgetリクエストの実装"><a class="anchor" href="#_webclientによるgetリクエストの実装"></a>1.1. WebClientによるGETリクエストの実装</h3>
+<div class="paragraph">
+<p>WebClientのgetメソッドを使うことで、GETリクエストを実装します。
+getメソッドに続けてuriメソッドやacceptメソッドを使用し、
+リクエスト先のURLやAcceptヘッダなどのリクエストに必要な情報を設定します。
+その後、retriveメソッドを挟んでbodyToMonoメソッドなどを使用してレスポンスの処理方法を設定します。
+bodyToMonoメソッドでは、レスポンスボディの情報から引数で指定したクラスのMonoを生成します。
+同様に、bodyToFluxメソッドを使うことで指定したクラスのFluxを生成することもできます。
+以下の例では、「http://localhost:8081/messages/1」というURLに対して、
+Acceptヘッダに「application/json」を設定したGETリクエストを送信し、
+レスポンスボディからMessageクラスのMonoを生成しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Mono&lt;Message&gt; message = webClient.get()
+    .uri("http://localhost:8081/messages/1")
+    .accept(MediaType.APPLICATION_JSON)
+    .retrive()
+    .bodyToMono(Message.class);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_webclientによるpostリクエストの実装"><a class="anchor" href="#_webclientによるpostリクエストの実装"></a>1.2. WebClientによるPOSTリクエストの実装</h3>
+<div class="paragraph">
+<p>WebClientのpostメソッドを使うことで、POSTリクエスト実装します。
+レスポンスの処理方法の設定はGETリクエストの時と同様にretriveメソッドとbodyToMonoメソッドやbodyToFluxメソッドを使用します。
+リクエストに必要な情報の設定では、リクエスト先のURLの設定などに加えて、リクエストボディに関する設定を行います。
+リクエストボディのContent-Typeはデフォルトで「application/x-www-form-urlencoded」となっており、フォーム形式でのリクエストを送信します。
+フォーム形式のリクエストボディを設定する方法としては、MultiValueMap&lt;String, String&gt;を使用する方法と、BodyInsertersを使用する方法があります。</p>
+</div>
+<div class="paragraph">
+<p>以下の例では、MultiValueMap&lt;String, String&gt;を使用してフォーム形式のリクエストボディの値を作成し、
+bodyValueメソッドを使用してリクエストボディに設定しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">MultiValueMap&lt;String, String&gt; formData = new LinkedMultiValueMap&lt;&gt;();
+formData.add("message", "echo using MuliValueMap");
+
+Mono&lt;Message&gt; message = webClient.post()
+        .uri("http://localhost:8081/messages")
+        .bodyValue(formData)
+        .retrieve()
+        .bodyToMono(Message.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>以下の例は、先ほどの例と同じ処理をBodyInsertersを使用して実現した例です。
+BodyInsertersのstaticメソッドであるfromFormDataメソッドを使用して値を作成し、
+bodyメソッドを使用してリクエストボディに設定しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Mono&lt;Message&gt; message = webClient.post()
+        .uri("http://localhost:8081/messages")
+        .body(fromFormData("message", "echo using BodyInserters"))
+        .retrieve()
+        .bodyToMono(Message.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>リクエストボディのContent-Typeを設定することで、Javaのオブジェクトを使用してJSON形式のリクエストボディを設定することもできます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Mono&lt;Message&gt; message = webClient.post()
+    .uri("http://localhost:8081/messages")
+    .contentType(MediaType.APPLICATION_JSON)
+    .bodyValue(new Message("POST Message"))
+    .retrive()
+    .bodyToMono(Message.class);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_webclientの実践的な使い方"><a class="anchor" href="#_webclientの実践的な使い方"></a>2. WebClientの実践的な使い方</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ここからは、WebClientのより実践的な使い方について紹介します。</p>
+</div>
+<div class="sect2">
+<h3 id="_webclientのカスタマイズ方法"><a class="anchor" href="#_webclientのカスタマイズ方法"></a>2.1. WebClientのカスタマイズ方法</h3>
+<div class="paragraph">
+<p>WebClientの挙動をカスタマイズする方法は大きく分けて2つあります。
+1つ目の方法はWebClientのBuilderを通じてカスタマイズする方法です。
+BuilderにはベースURL、デフォルトのヘッダ、Cookieなどを設定するためのメソッドが用意されており、
+これらのメソッドを通じてカスタマイズすることができます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">WebClient webClient = builder
+        .baseUrl("http://localhost:8081")
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultCookie("key", "value")
+        .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>なお、Spring Bootを利用している場合、WebClientCustomizerというインタフェースが提供されており、
+このインタフェースを実装したクラスを作成してBean定義することで、
+Spring BootによってBean定義されているBuilderをカスタマイズすることが可能です。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Component
+public class CommonWebClientCustomizer implements WebClientCustomizer {
+    @Override
+    public void customize(WebClient.Builder webClientBuilder) {
+        webClientBuilder
+                .baseUrl("http://localhost:8081")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultCookie("key", "value");
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>2つ目の方法はWebClientの内部で使用されるHttpClientを通じてカスタマイズする方法です。
+WebClientの内部のHttpClientのAPIを使用することでより細かいカスタマイズをすることができます。
+後述するタイムアウトはこちらの方法のみで設定することが可能です。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">HttpClient httpClient = HttpClient.create()
+    .responseTimeout(Duration.ofSeconds(5));
+WebClient client = builder
+    .clientConnector(new ReactorClientHttpConnector(httpClient))
+    .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Spring Bootを使用している場合、WebClientCustomizerと同じような形でカスタマイズを適用するためのインタフェースとして、
+ReactorNettyHttpClientMapperが提供されています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Component
+public class ReactorNettyHttpClientTimeoutMapper implements ReactorNettyHttpClientMapper {
+    @Override
+    public HttpClient configure(HttpClient httpClient) {
+        return httpClient.responseTimeout(Duration.ofSeconds(5));
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_タイムアウトの設定"><a class="anchor" href="#_タイムアウトの設定"></a>2.2. タイムアウトの設定</h3>
+<div class="paragraph">
+<p>HTTPクライアントを利用する際には、接続先の障害や遅延を想定し、コネクションタイムアウトやレスポンスタイムアウトを設定することが重要です。
+WebClientの場合、HttpClientのAPIを通じて各種タイムアウトを設定します。
+以下の例では、コネクションタイムアウトに10000ミリ秒（10秒）、レスポンスタイムアウトに5秒を設定しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">HttpClient httpClient = HttpClient.create()
+    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+    .responseTimeout(Duration.ofSeconds(5));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_filterによる共通処理の適用"><a class="anchor" href="#_filterによる共通処理の適用"></a>2.3. filterによる共通処理の適用</h3>
+<div class="paragraph">
+<p>WebClientでは、filterという機能を使うことによりリクエストに対して共通の処理を適用することができます。</p>
+</div>
+<div class="paragraph">
+<p>例えば、共通のヘッダを付与するfilterは以下のように実装します。
+Builderのfilterメソッド内で定義されているラムダ関数がfilterの実態になります。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">WebClient webClient = builder
+    .filter((request, next) =&gt; {
+        ClientRequest filtered = ClientRequest.from(request)
+            .header("foo", "bar")
+            build();
+        return next.exchange(filtered);
+    })
+    .build();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_エラーハンドリング"><a class="anchor" href="#_エラーハンドリング"></a>2.4. エラーハンドリング</h3>
+<div class="paragraph">
+<p>WebClientではレスポンスのステータスコードが400番台や500番台の場合、各ステータスコードに対応した例外を発生させます。
+これらの例外はすべてWebClientResponseExceptionを継承したクラスになっており、
+エラー処理をまとめて実装することもステータスコードごとに実装することもできます。
+エラー処理の実装には、Reactorの仕組みを使います。
+Reactorでは、例外をキャッチして処理を継続するためのonErrorResumeや、
+発生した例外を別の例外に変換するonErrorMapなどを使用してエラー処理を実装します。
+以下の例では、レスポンスのステータスコードが500の場合に独自のエラーメッセージを含むMessageを返すように実装しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Mono&lt;Message&gt; message = webClient.post()
+        .uri("http://localhost:8081/messages")
+        .body(fromFormData("message", "echo using BodyInserters"))
+        .retrieve()
+        .bodyToMono(Message.class)
+        .onErrorResume(WebClientResponseException.InternalServerError.class,
+            e -&gt; Mono.just(new Message("Internal Server Error")));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_リトライ"><a class="anchor" href="#_リトライ"></a>2.5. リトライ</h3>
+<div class="paragraph">
+<p>HTTPリクエストがエラーになった場合のリトライもReactorの仕組みを使うことで簡単に実装することができます。
+基本的なリトライの実装は以下のようになります。
+Retryのstaticメソッドでリトライ方法を指定し、それをretryWhenに渡します。
+ここでは、Retry.maxにより5回リトライするという内容を指定しています。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Mono&lt;Message&gt; message = webClient.get()
+    .uri("http://localhost:8081/messages/1")
+    .accept(MediaType.APPLICATION_JSON)
+    .retrive()
+    .bodyToMono(Message.class)
+    .retryWhen(Retry.max(5));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Retry.max以外にも以下のようなstaticメソッドが用意されています。</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">メソッド</th>
+<th class="tableblock halign-left valign-top">リトライ方法</th>
+<th class="tableblock halign-left valign-top">リトライ間隔</th>
+<th class="tableblock halign-left valign-top">リトライ回数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retry.indefinitely</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">無限にリトライします</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">すぐ</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">無限</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retry.max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">指定した回数リトライします</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">すぐ</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">引数で指定した回数</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retry.maxInARow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">連続で指定した回数エラーになるまでリトライします</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">すぐ</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">連続で指定した回数エラーになるまで</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retry.fixedDelay</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">指定した間隔で指定した回数リトライします</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">引数で指定した間隔</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">引数で指定した回数</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rtery.backoff</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">徐々にリトライ間隔を長くしながら指定した回数リトライします</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">引数で指定した時間 * 2のn-1乗 + ゆらぎ（n：リトライ回数）</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">引数で指定した回数</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_まとめ"><a class="anchor" href="#_まとめ"></a>3. まとめ</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>今回は、リアクティブなHTTPクライアント、WebClientについて基本的な使い方から実践的な使い方まで解説しました。</p>
+</div>
+<div class="paragraph">
+<p>次回はリアクティブなDBアクセスのための技術であるR2DBCについて解説します。</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-12-24 07:20:59 UTC
+Last updated 2021-01-28 02:06:10 UTC
 </div>
 </div>
 </body>

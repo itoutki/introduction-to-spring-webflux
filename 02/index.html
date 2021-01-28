@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.10">
-<title>02 Spring WebFluxの要 リアクティブプログラミング入門</title>
+<meta name="generator" content="Asciidoctor 2.0.12">
+<title>02 Spring WebFluxの要! リアクティブプログラミング入門</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -47,7 +47,7 @@ textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
 *,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
 html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
 a:hover{cursor:pointer}
 img,object,embed{max-width:100%;height:auto}
 object,embed{height:100%}
@@ -62,10 +62,8 @@ img{-ms-interpolation-mode:bicubic}
 img,object,svg{display:inline-block;vertical-align:middle}
 textarea{height:auto;min-height:50px}
 select{width:100%}
-.center{margin-left:auto;margin-right:auto}
-.stretch{width:100%}
 .subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
-div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
 a{color:#2156a5;text-decoration:underline;line-height:inherit}
 a:hover,a:focus{color:#1d4b8f}
 a img{border:0}
@@ -105,19 +103,22 @@ h1{font-size:2.75em}
 h2{font-size:2.3125em}
 h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
 h4{font-size:1.4375em}}
-table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede;word-wrap:normal}
 table thead,table tfoot{background:#f7f8f7}
 table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
 table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
 table tr.even,table tr.alt{background:#f8f8f7}
-table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
 h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
 h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
 .clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
 .clearfix::after,.float-group::after{clear:both}
-:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
-:not(pre)>code.nobreak{word-wrap:normal}
-:not(pre)>code.nowrap{white-space:nowrap}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
 pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
 pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
 pre>code{display:block}
@@ -182,7 +183,7 @@ body.toc2.toc-right{padding-left:0;padding-right:20em}}
 #content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
 #content #toc>:first-child{margin-top:0}
 #content #toc>:last-child{margin-bottom:0}
-#footer{max-width:100%;background:rgba(0,0,0,.8);padding:1.25em}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
 #footer-text{color:rgba(255,255,255,.8);line-height:1.44}
 #content{margin-bottom:.625em}
 .sect1{padding-bottom:.625em}
@@ -205,7 +206,7 @@ table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font
 .admonitionblock>table td.icon{text-align:center;width:80px}
 .admonitionblock>table td.icon img{max-width:none}
 .admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
-.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
 .exampleblock>.content>:first-child{margin-top:0}
@@ -215,7 +216,7 @@ table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font
 .sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
 .exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
-.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
 .literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class="highlight"],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
@@ -261,21 +262,20 @@ pre.pygments .lineno::before{content:"";margin-right:-.125em}
 .quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
 .quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
 .quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
-table.tableblock{max-width:100%;border-collapse:separate}
 p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
 td.tableblock>.content>:last-child{margin-bottom:-1.25em}
-td.tableblock>.content>:last-child.sidebarblock{margin-bottom:0}
 table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
-table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
-table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
-table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
-table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px}
-table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0}
-table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
-table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
 table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
 table.frame-sides{border-width:0 1px}
-table.frame-topbot,table.frame-ends{border-width:1px 0}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
 table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
 th.halign-left,td.halign-left{text-align:left}
 th.halign-right,td.halign-right{text-align:right}
@@ -284,7 +284,7 @@ th.valign-top,td.valign-top{vertical-align:top}
 th.valign-bottom,td.valign-bottom{vertical-align:bottom}
 th.valign-middle,td.valign-middle{vertical-align:middle}
 table thead th,table tfoot th{font-weight:bold}
-tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th{background:#f7f8f7}
 tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
 p.tableblock>code:only-child{background:none;padding:0}
 p.tableblock{font-size:1em}
@@ -313,6 +313,7 @@ ol.lowergreek{list-style-type:lower-greek}
 .hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
 td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
 td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
 .literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
 .colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
 .colist td:not([class]):first-child img{max-width:none}
@@ -385,7 +386,7 @@ a span.icon>.fa{cursor:inherit}
 .admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
 .admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
 .admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
-.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:50%;border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
 .conum[data-value] *{color:#fff!important}
 .conum[data-value]+b{display:none}
 .conum[data-value]::after{content:attr(data-value)}
@@ -412,6 +413,7 @@ thead{display:table-header-group}
 svg{max-width:100%}
 p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
 h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
 #toc,.sidebarblock,.exampleblock>.content{background:none!important}
 #toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
 body.book #header{text-align:center}
@@ -438,13 +440,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>02 Spring WebFluxの要 リアクティブプログラミング入門</h1>
+<h1>02 Spring WebFluxの要! リアクティブプログラミング入門</h1>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_リアクティブプログラミングの基本">1. リアクティブプログラミングの基本</a></li>
-<li><a href="#_リアクティブプログラミングとreactive_streams">2. リアクティブプログラミングとReactive Streams</a></li>
-<li><a href="#_reactor入門">3. Reactor入門</a></li>
+<li><a href="#_リアクティブプログラミングとreactive_streams">2. リアクティブプログラミングと「Reactive Streams」</a></li>
+<li><a href="#_reactor入門">3. Reactor入門</a>
+<ul class="sectlevel2">
+<li><a href="#_map個々のデータに対して処理を実行">3.1. map：個々のデータに対して処理を実行</a></li>
+<li><a href="#_flatmap個々のデータに対して非同期処理を実行">3.2. flatMap：個々のデータに対して非同期処理を実行</a></li>
+<li><a href="#_filter条件に合致するデータのみを抽出">3.3. filter：条件に合致するデータのみを抽出</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -452,7 +460,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>今回は、Spring WebFluxを使う上で欠かせない要素である、リアクティブプログラミングおよびReactorについて解説します。</p>
+<p>今回は、Spring WebFluxを使う上で欠かせない要素である「リアクティブプログラミング」と「Reactor」について解説します。</p>
 </div>
 </div>
 </div>
@@ -469,7 +477,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="paragraph">
 <p>下図のように、表計算ソフトのシート上に、セルA、セルBがあるとします。
-この時、セルBには「セルA * 2」という計算式が定義されています。
+このとき、セルBには「セルA * 2」という計算式が定義されています。
 この計算式が「通知されるデータを受け取って処理を行うハンドラ」にあたります。</p>
 </div>
 <div class="paragraph">
@@ -477,7 +485,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="paragraph">
 <p>では、次にセルAに「1」という数値を入力した場合を考えてみましょう。
-セルAに数値が入力されると、セルAの値が変わったというイベントが発生します。
+セルAに数値が入力されると、「セルAの値が変わった」というイベントが発生します。
 セルBはセルAの変更された値を受け取り、定義された計算式に基づく計算を実行し、結果として「2」を表示します。</p>
 </div>
 <div class="paragraph">
@@ -485,24 +493,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="paragraph">
 <p>続いて、セルAの値を「5」に変更してみるとどうなるでしょうか。
-この場合、セルAの値が「5」に変わったというイベントが発生し、セルBは計算を再度実行します。
+この場合、「セルAの値が『5』に変わった」というイベントが発生し、セルBは計算を再度実行します。
 そして、新しい結果として「10」を表示します。</p>
 </div>
 <div class="paragraph">
 <p><span class="image"><img src="./../images/02/reactive_spreadsheet_06.png" alt="reactive spreadsheet 06"></span></p>
 </div>
 <div class="paragraph">
-<p>このように、データの生成・変更といったイベントに応じて処理を行うことから
+<p>このように、データの生成／変更といったイベントに応じて処理を行うことから
 リアクティブ（＝反応的）プログラミングと呼ばれています。</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_リアクティブプログラミングとreactive_streams"><a class="anchor" href="#_リアクティブプログラミングとreactive_streams"></a>2. リアクティブプログラミングとReactive Streams</h2>
+<h2 id="_リアクティブプログラミングとreactive_streams"><a class="anchor" href="#_リアクティブプログラミングとreactive_streams"></a>2. リアクティブプログラミングと「Reactive Streams」</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>リアクティブプログラミングを実現するライブラリには様々なものがあります。
-主要なライブラリとしては以下のようなものがあります。</p>
+<p>リアクティブプログラミングを実現するライブラリにはさまざまなものがあります。
+主要なライブラリは、以下の通りです。</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -545,16 +553,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>当初はそれぞれ個別に実装が進められていましたが、
 やがて共通のAPIを策定することになりました。
-それがReactive Streamsです。</p>
+それが「Reactive Streams」です。</p>
 </div>
 <div class="paragraph">
-<p>Reactive Streamsは、API定義、仕様、TCK（Technology Compatibility Kit、実装が仕様を満たしていることを確認するためのテストコード群）からなり、
+<p>Reactive Streamsは、API定義、仕様、TCK（Technology Compatibility Kit：実装が仕様を満たしていることを確認するためのテストコード群）から成り、
 Java向けのAPIのほか、Javascriptや.NET、Swift向けのものも提供されています。
 Java向けにはインタフェースの形でAPIが提供されています。</p>
 </div>
 <div class="paragraph">
-<p>Reactive Streamsの大きな特徴はバックプレッシャーという仕組みを定義していることです。
-バックプレッシャーとは、データを受け取る側がデータの送信元に対して送信量を制御する仕組みのことです。
+<p>Reactive Streamsの大きな特徴は「バックプレッシャー」という仕組みを定義していることです。
+バックプレッシャーは、データを受け取る側がデータの送信元に対して送信量を制御します。
 データの送信元よりもデータを受け取る側の処理速度が遅いようなケースにおいて、
 受け取る側は自身が処理可能なデータ量を送信元に通知し、送信元は通知内容に基づいてデータを送信することによって、
 データを溢れさせずに処理することが可能になります。</p>
@@ -562,8 +570,8 @@ Java向けにはインタフェースの形でAPIが提供されています。<
 <div class="paragraph">
 <p>それでは、Reactive StreamsのAPI仕様について詳しく見てみましょう。
 Reactive StreamsのAPI仕様は、Publisher、Subscriber、Subscription、そしてProcessorという、
-4つのAPIコンポーネントからなる非常にシンプルなものとなっています。
-Java向けのAPIとしては以下の4つのインタフェースとして提供されています。</p>
+4つのAPIコンポーネントから成る非常にシンプルなものとなっています。
+Java向けのAPIとしては、以下の4つのインタフェースとして提供されています。</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -629,13 +637,13 @@ public interface Processor&lt;T, R&gt; extends Subscriber&lt;T&gt;, Publisher&lt
 </table>
 <div class="paragraph">
 <p>では、先ほどの表計算ソフトの例を使って、Reactive Streamsにおいてどのような流れで処理が行われるのか見てみましょう。<br>
-セルAはデータの送信元にあたるため、Reactive StreamsにおけるPublisherと考えることができます。<br>
-セルBはデータを受け取る側にあたるため、Reactive StreamsにおけるSubscriberと考えることができます。<br></p>
+セルAはデータの送信元に当たるため、Reactive StreamsにおけるPublisherと考えることができます。<br>
+一方、セルBはデータを受け取る側に当たるため、Reactive StreamsにおけるSubscriberと考えることができます。<br></p>
 </div>
 <div class="paragraph">
 <p>この例では計算式で直接セルAを指定していますが、
-Reactive Streams流に読み替えると、受け取った値を2倍して表示するSubscriberの処理（SubscriberのonNextメソッド）を定義し、
-SubscriberをPublisherに登録する、となります。<br>
+Reactive Streams流に読み替えると、
+「受け取った値を2倍して表示するSubscriberの処理（SubscriberのonNextメソッド）を定義し、SubscriberをPublisherに登録する」となります。<br>
 すると、内部的にはPublisherはSubscriptionを生成し、
 SubscriberであるセルBに対してonSubscribeメソッドを通じてsubscriptionを渡します。<br>
 セルBはSubscrptionのrequestメソッドを通じてデータを1個送信するよう要求します。<br></p>
@@ -647,7 +655,7 @@ SubscriberであるセルBに対してonSubscribeメソッドを通じてsubscri
 <p>セルAに「1」を入力するという操作はPublisherであるセルAから「1」というデータを送信する処理に該当します。<br>
 この場合、セルAはSubscriptionを通じてセルBのonNextメソッドに「1」というデータを渡します。<br>
 セルBのonNextメソッドには「受け取った値を2倍して表示する」という処理が定義されているため、
-その処理が実行されることによりセルBに「2」が表示されることになります。<br>
+その処理が実行されてセルBに「2」が表示されることになります。<br>
 また、セルBでは要求した1個のデータを受け取ったため、再度requestメソッドで次のデータを送信するよう要求します。<br></p>
 </div>
 <div class="paragraph">
@@ -669,19 +677,26 @@ SubscriberであるセルBに対してonSubscribeメソッドを通じてsubscri
 <div class="sectionbody">
 <div class="paragraph">
 <p>ここからは、Spring WebFluxにも使われているリアクティブプログラミングのライブラリ、Reactorについて解説していきます。
-ReactorはReactive Streamsの仕様を実装しつつも、関数型の考え方・インタフェースを取り入れ、
+ReactorはReactive Streamsの仕様を実装しつつも、関数型の考え方／インタフェースを取り入れ、
 Stream APIのようにラムダ式を引数にしてデータのフィルタリングや変換などの処理を実装できるAPIを提供するライブラリです。</p>
 </div>
 <div class="paragraph">
-<p>Reactorを理解する上で重要となるクラスがFluxとMonoです。</p>
+<p>Reactorを理解する上で重要となるクラスが「Flux」と「Mono」です。</p>
 </div>
 <div class="paragraph">
 <p>FluxはReactive StreamsにおけるPublisherインタフェースを実装しており、0個以上のデータを持つデータ列を扱うためのクラスです。<br>
-以下のように、justメソッドを使うことでFluxを生成することができます。<br>
-この例では、これまでの例で出てきたような「1」と「5」という2つの整数データを持つFluxを生成しています。<br>
-生成したFluxのsubscribeメソッドを使ってデータを受け取った時の処理を定義することができます。<br>
+以下のように、justメソッドを使うことでFluxを生成することができます。<br></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">Flux&lt;Integer&gt; input = Flux.just(1, 5);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>この例では、これまでの例で出てきたような「1」と「5」という2つの整数データを持つFluxを生成しています。<br>
+生成したFluxのsubscribeメソッドを使って、データを受け取った時の処理を定義することができます。<br>
 Reactorでは、ラムダ関数をsubscribeメソッドに渡すことで、Reactive StreamsにおけるSubscriberを内部的に生成することができるようになっています。<br>
-「受け取った値を2倍して表示する」Subscriberを実装すると以下のようになります。</p>
+例えば、先ほどのFlux生成に続けて「受け取った値を2倍して表示する」Subscriberを実装すると以下のようになります。</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -690,7 +705,7 @@ input.subscribe(d -&gt; System.out.println(d * 2));</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>MonoもFlux同様Publisherインタフェースを実装したクラスですが、0個または1個のデータを扱うためのクラスです。
+<p>MonoもFlux同様、Publisherインタフェースを実装したクラスですが、その役割は0個または1個のデータを扱うことです。
 MonoにもFluxと同様にjustメソッドやsubscribeメソッドが用意されており、以下のように使うことができます。</p>
 </div>
 <div class="listingblock">
@@ -700,13 +715,15 @@ MonoにもFluxと同様にjustメソッドやsubscribeメソッドが用意さ�
 </div>
 </div>
 <div class="paragraph">
-<p>FluxとMonoにはオペレータと呼ばれる様々なメソッドが用意されており、
+<p>FluxとMonoには「オペレータ」と呼ばれるさまざまなメソッドが用意されており、
 オペレータをメソッドチェーンで繋げていくことによって処理を実装します。
 オペレータは基本的にラムダ関数を引数として受け取り、ラムダ関数で定義した内容に基づいた処理を行うPublisherを生成します。
 ここでは、よく使うオペレータをいくつか紹介します。</p>
 </div>
+<div class="sect2">
+<h3 id="_map個々のデータに対して処理を実行"><a class="anchor" href="#_map個々のデータに対して処理を実行"></a>3.1. map：個々のデータに対して処理を実行</h3>
 <div class="paragraph">
-<p>mapは個々のデータに対して処理を行うためのオペレータです。
+<p>「map」は個々のデータに対して処理を行うためのオペレータです。
 以下の例では、受け取った整数に対して2倍した値を返す処理を定義しています。</p>
 </div>
 <div class="listingblock">
@@ -720,10 +737,15 @@ Mono.just(10)
   .subscribe(d -&gt; System.out.println(d));</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_flatmap個々のデータに対して非同期処理を実行"><a class="anchor" href="#_flatmap個々のデータに対して非同期処理を実行"></a>3.2. flatMap：個々のデータに対して非同期処理を実行</h3>
 <div class="paragraph">
-<p>flatMapはmapと同様に個々のデータに対して処理を行いますが、結果としてFluxやMonoなどを返す処理を行うためのオペレータです。
-例えば、Fluxの個々の値を元にAPIリクエストなどの非同期処理を実行したい場合などに使用します。
-以下の例では、先ほどのmapの例と同様、受け取った整数に対して2倍した値を返す処理を定義していますが、
+<p>「flatMap」はmapと同様に個々のデータに対して処理を行いますが、結果としてFluxやMonoなどを返す処理を行うためのオペレータです。
+例えば、Fluxの個々の値を基にAPIリクエストなどの非同期処理を実行したい場合などに使用します。</p>
+</div>
+<div class="paragraph">
+<p>以下の例では、先ほどのmapの例と同様、受け取った整数に対して2倍した値を返す処理を定義していますが、
 ラムダ関数の返り値がMonoとなっているため、mapではなくflatMapを使用しています。</p>
 </div>
 <div class="listingblock">
@@ -737,8 +759,11 @@ Mono.just(1, 2, 3, 4, 5)
   .subscribe(d -&gt; System.out.println(d));</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_filter条件に合致するデータのみを抽出"><a class="anchor" href="#_filter条件に合致するデータのみを抽出"></a>3.3. filter：条件に合致するデータのみを抽出</h3>
 <div class="paragraph">
-<p>filterは条件に合致するデータのみを抽出するためのオペレータです。
+<p>「filter」は条件に合致するデータのみを抽出するためのオペレータです。
 以下の例では、受け取った整数に対して、2で割り切れるもののみを抽出する処理を定義しています。</p>
 </div>
 <div class="listingblock">
@@ -754,15 +779,18 @@ Mono.just(1, 2, 3, 4, 5)
 </div>
 <div class="paragraph">
 <p>今回は、Spring WebFluxの要となるリアクティブプログラミングの考え方、リアクティブプログラミングの標準であるReactive Streams、
-そしてSpring WebFlux内部で使用されているリアクティブプログラミングのライブラリであるReactorについて解説しました。
-次回は、Spring WebFluxに内包された次世代のHTTPクライアント、WebClientについて解説します。</p>
+そしてSpring WebFlux内部で使用されているリアクティブプログラミングのライブラリであるReactorについて解説しました。</p>
+</div>
+<div class="paragraph">
+<p>次回は、Spring WebFluxに内包された次世代のHTTPクライアント、「WebClient」について解説します。</p>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-12-24 07:20:59 UTC
+Last updated 2021-01-28 02:06:10 UTC
 </div>
 </div>
 </body>
