@@ -7,12 +7,19 @@
 
 = 03 リアクティブなHTTPクライアント WebClient入門
 
-今回は、Spring WebFluxに内包されたリアクティブなHTTPクライアント、WebClientについて解説します。
+ノンブロッキングなWebアプリケーションを作るためには、
+リクエストを処理する一連の流れをすべてノンブロッキングに実装することが重要です。
+一箇所でもブロッキングな処理があるとイベントループスレッドをブロックしてしまい、処理性能が著しく低下してしまいます。
+そのため、外部APIへのリクエストやRDBMSへのアクセスなどもノンブロッキングに実装するための仕組みが必要になります。
+そこで今回は、Spring WebFluxに内包されたリアクティブ・ノンブロッキングなHTTPクライアント、WebClientについて解説します。
 
 == WebClientの基本
 
+
 WebClientはノンブロッキングなHTTPリクエストを実現するための機能です。
 Spring WebFluxと同様にReactorベースのFluent APIを備えており、メソッドチェインによってHTTPリクエストを実現できます。
+
+image:./../images/03/overview.png[]
 
 なお、WebClientはSpring WebFluxに内包された機能ではありますが、Spring MVCと組み合わせて使用することも可能です。
 Spring MVCではRestTemplateというHTTPクライアントを提供していますが、
@@ -80,8 +87,8 @@ Mono<Message> message = webClient.post()
 ----
 
 以下の例は、先ほどの例と同じ処理をBodyInsertersを使用して実現した例です。
-BodyInsertersのstaticメソッドであるfromFormDataメソッドを使用して値を作成し、
-bodyメソッドを使用してリクエストボディに設定しています。
+BodyInsertersのstaticメソッドであるfromFormDataメソッドを使用して値を作成します。
+作成した値は、先ほどのbodyValueメソッドではなく、bodyメソッドを使用してリクエストボディに設定します。
 
 [source, java]
 ----
@@ -91,6 +98,36 @@ Mono<Message> message = webClient.post()
         .retrieve()
         .bodyToMono(Message.class);
 ----
+
+ファイルアップロード時のようなマルチパートデータを送信する場合にも同じように実装することができます。
+マルチパートデータの場合にはMultiValueMap<String, HttpEntity<?>>型になります。
+MultipartBodyBuilderを使うことでマルチパートデータを簡単に生成できます。
+また、BodyInsertersのfromMultipartDataメソッドを使用することもできます。
+
+[source, java]
+----
+// MulipartBodyBuilderの使用例
+Resource resource = new ClassPathResource("file.txt");
+MultipartBodyBuilder builder = new MultipartBodyBuilder();
+builder.part("file", resource);
+builder.part("description", "uploaded file");
+MultiValueMap<String, HttpEntity<?>> parts = builder.build();
+
+Mono<Message> message = webClient.post()
+        .uri("http://localhost:8081/upload")
+        .bodyValue(parts)
+        .retrieve()
+        .bodyToMono(Message.class);
+
+
+// fromMulipartDataの使用例
+Mono<Message> message = webClient.post()
+        .uri("http://localhost:8081/upload")
+        .body(fromMulipartData("file", resource).with("description", "uploaded file"))
+        .retrieve()
+        .bodyToMono(Message.class);
+----
+
 
 リクエストボディのContent-Typeを設定することで、Javaのオブジェクトを使用してJSON形式のリクエストボディを設定することもできます。
 
@@ -103,6 +140,8 @@ Mono<Message> message = webClient.post()
     .retrive()
     .bodyToMono(Message.class);
 ----
+
+
 
 == WebClientの実践的な使い方
 
