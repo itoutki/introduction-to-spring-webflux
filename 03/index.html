@@ -467,7 +467,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>今回は、Spring WebFluxに内包されたリアクティブなHTTPクライアント、WebClientについて解説します。</p>
+<p>ノンブロッキングなWebアプリケーションを作るためには、
+リクエストを処理する一連の流れをすべてノンブロッキングに実装することが重要です。
+一箇所でもブロッキングな処理があるとイベントループスレッドをブロックしてしまい、処理性能が著しく低下してしまいます。
+そのため、外部APIへのリクエストやRDBMSへのアクセスなどもノンブロッキングに実装するための仕組みが必要になります。
+そこで今回は、Spring WebFluxに内包されたリアクティブ・ノンブロッキングなHTTPクライアント、WebClientについて解説します。</p>
 </div>
 </div>
 </div>
@@ -477,6 +481,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="paragraph">
 <p>WebClientはノンブロッキングなHTTPリクエストを実現するための機能です。
 Spring WebFluxと同様にReactorベースのFluent APIを備えており、メソッドチェインによってHTTPリクエストを実現できます。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/03/overview.png" alt="overview"></span></p>
 </div>
 <div class="paragraph">
 <p>なお、WebClientはSpring WebFluxに内包された機能ではありますが、Spring MVCと組み合わせて使用することも可能です。
@@ -550,14 +557,44 @@ Mono&lt;Message&gt; message = webClient.post()
 </div>
 <div class="paragraph">
 <p>以下の例は、先ほどの例と同じ処理をBodyInsertersを使用して実現した例です。
-BodyInsertersのstaticメソッドであるfromFormDataメソッドを使用して値を作成し、
-bodyメソッドを使用してリクエストボディに設定しています。</p>
+BodyInsertersのstaticメソッドであるfromFormDataメソッドを使用して値を作成します。
+作成した値は、先ほどのbodyValueメソッドではなく、bodyメソッドを使用してリクエストボディに設定します。</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">Mono&lt;Message&gt; message = webClient.post()
         .uri("http://localhost:8081/messages")
         .body(fromFormData("message", "echo using BodyInserters"))
+        .retrieve()
+        .bodyToMono(Message.class);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ファイルアップロード時のようなマルチパートデータを送信する場合にも同じように実装することができます。
+マルチパートデータの場合にはMultiValueMap&lt;String, HttpEntity&lt;?&gt;&gt;型になります。
+MultipartBodyBuilderを使うことでマルチパートデータを簡単に生成できます。
+また、BodyInsertersのfromMultipartDataメソッドを使用することもできます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">// MulipartBodyBuilderの使用例
+Resource resource = new ClassPathResource("file.txt");
+MultipartBodyBuilder builder = new MultipartBodyBuilder();
+builder.part("file", resource);
+builder.part("description", "uploaded file");
+MultiValueMap&lt;String, HttpEntity&lt;?&gt;&gt; parts = builder.build();
+
+Mono&lt;Message&gt; message = webClient.post()
+        .uri("http://localhost:8081/upload")
+        .bodyValue(parts)
+        .retrieve()
+        .bodyToMono(Message.class);
+
+
+// fromMulipartDataの使用例
+Mono&lt;Message&gt; message = webClient.post()
+        .uri("http://localhost:8081/upload")
+        .body(fromMulipartData("file", resource).with("description", "uploaded file"))
         .retrieve()
         .bodyToMono(Message.class);</code></pre>
 </div>
@@ -796,7 +833,7 @@ Retryのstaticメソッドでリトライ方法を指定し、それをretryWhen
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-01-28 02:06:10 UTC
+Last updated 2021-02-07 13:44:28 UTC
 </div>
 </div>
 </body>
