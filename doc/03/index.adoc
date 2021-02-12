@@ -8,10 +8,10 @@
 = 03 リアクティブなHTTPクライアント WebClient入門
 
 ノンブロッキングなWebアプリケーションを作るためには、
-リクエストを処理する一連の流れをすべてノンブロッキングに実装することが重要です。
-一箇所でもブロッキングな処理があるとイベントループスレッドをブロックしてしまい、処理性能が著しく低下してしまいます。
-そのため、外部APIへのリクエストやRDBMSへのアクセスなどもノンブロッキングに実装するための仕組みが必要になります。
-そこで今回は、Spring WebFluxに内包されたリアクティブ・ノンブロッキングなHTTPクライアント、WebClientについて解説します。
+リクエストを処理する一連の流れを全てノンブロッキングに実装することが重要です。
+もし1カ所でもブロッキングな処理があるとイベントループスレッドをブロックしてしまい、処理性能が著しく低下します。
+これを回避するには、外部APIへのリクエストやRDBMSへのアクセスなどもノンブロッキングに実装するための仕組みが必要です。
+そこで今回は、Spring WebFluxに内包されたリアクティブ／ノンブロッキングなHTTPクライアントである「WebClient」について解説します。
 
 == WebClientの基本
 
@@ -22,12 +22,12 @@ Spring WebFluxと同様にReactorベースのFluent APIを備えており、メ�
 image:./../images/03/overview.png[]
 
 なお、WebClientはSpring WebFluxに内包された機能ではありますが、Spring MVCと組み合わせて使用することも可能です。
-Spring MVCではRestTemplateというHTTPクライアントを提供していますが、
+Spring MVCでは「RestTemplate」というHTTPクライアントを提供していますが、
 RestTemplateはSpring Framework 5.0でメンテナンスモードとなり、今後はWebClientを使用することを推奨しています。
 
 
 Spring Bootを利用する場合、WebClientを生成するためのBuilderがあらかじめBean定義されています。
-そのため、以下のように実装することでWebClientのインスタンスを得ることができます。
+そのため、以下のように実装することでWebClientのインスタンスを取得可能です。
 このWebClientインスタンスを使って、各種リクエスト処理を実行します。
 
 [source, java]
@@ -47,9 +47,9 @@ public class WebClientSample {
 WebClientのgetメソッドを使うことで、GETリクエストを実装します。
 getメソッドに続けてuriメソッドやacceptメソッドを使用し、
 リクエスト先のURLやAcceptヘッダなどのリクエストに必要な情報を設定します。
-その後、retriveメソッドを挟んでbodyToMonoメソッドなどを使用してレスポンスの処理方法を設定します。
+その後、retriveメソッドを挟んでbodyToMonoメソッドなどを使用し、レスポンスの処理方法を設定します。
 bodyToMonoメソッドでは、レスポンスボディの情報から引数で指定したクラスのMonoを生成します。
-同様に、bodyToFluxメソッドを使うことで指定したクラスのFluxを生成することもできます。
+同様に、bodyToFluxメソッドを使うことで指定したクラスのFluxを生成することも可能です。
 以下の例では、「http://localhost:8081/messages/1」というURLに対して、
 Acceptヘッダに「application/json」を設定したGETリクエストを送信し、
 レスポンスボディからMessageクラスのMonoを生成しています。
@@ -69,9 +69,9 @@ WebClientのpostメソッドを使うことで、POSTリクエスト実装しま
 レスポンスの処理方法の設定はGETリクエストの時と同様にretriveメソッドとbodyToMonoメソッドやbodyToFluxメソッドを使用します。
 リクエストに必要な情報の設定では、リクエスト先のURLの設定などに加えて、リクエストボディに関する設定を行います。
 リクエストボディのContent-Typeはデフォルトで「application/x-www-form-urlencoded」となっており、フォーム形式でのリクエストを送信します。
-フォーム形式のリクエストボディを設定する方法としては、MultiValueMap<String, String>を使用する方法と、BodyInsertersを使用する方法があります。
+フォーム形式のリクエストボディを設定する方法としては、「MultiValueMap<String, String>」を使用する方法と、BodyInsertersを使用する方法があります。
 
-以下の例では、MultiValueMap<String, String>を使用してフォーム形式のリクエストボディの値を作成し、
+以下の例では、「MultiValueMap<String, String>」を使用してフォーム形式のリクエストボディの値を作成し、
 bodyValueメソッドを使用してリクエストボディに設定しています。
 
 [source, java]
@@ -100,9 +100,9 @@ Mono<Message> message = webClient.post()
 ----
 
 ファイルアップロード時のようなマルチパートデータを送信する場合にも同じように実装することができます。
-マルチパートデータの場合にはMultiValueMap<String, HttpEntity<?>>型になります。
+マルチパートデータの場合には、MultiValueMap<String, HttpEntity<?>>型になります。
 MultipartBodyBuilderを使うことでマルチパートデータを簡単に生成できます。
-また、BodyInsertersのfromMultipartDataメソッドを使用することもできます。
+また、BodyInsertersのfromMultipartDataメソッドを使用することも可能です。
 
 [source, java]
 ----
@@ -145,7 +145,7 @@ Mono<Message> message = webClient.post()
 
 == WebClientの実践的な使い方
 
-ここからは、WebClientのより実践的な使い方について紹介します。
+ここからは、WebClientのより実践的な使い方について紹介していきます。
 
 === WebClientのカスタマイズ方法
 
@@ -163,7 +163,7 @@ WebClient webClient = builder
         .build();
 ----
 
-なお、Spring Bootを利用している場合、WebClientCustomizerというインタフェースが提供されており、
+なお、Spring Bootを利用している場合、「WebClientCustomizer」というインタフェースが提供されており、
 このインタフェースを実装したクラスを作成してBean定義することで、
 Spring BootによってBean定義されているBuilderをカスタマイズすることが可能です。
 
@@ -181,9 +181,9 @@ public class CommonWebClientCustomizer implements WebClientCustomizer {
 }
 ----
 
-2つ目の方法はWebClientの内部で使用されるHttpClientを通じてカスタマイズする方法です。
+2つ目の方法は、WebClientの内部で使用されるHttpClientを通じてカスタマイズする方法です。
 WebClientの内部のHttpClientのAPIを使用することでより細かいカスタマイズをすることができます。
-後述するタイムアウトはこちらの方法のみで設定することが可能です。
+後述するタイムアウトは、こちらの方法のみで設定することが可能です。
 
 [source, java]
 ----
@@ -194,8 +194,8 @@ WebClient client = builder
     .build();
 ----
 
-Spring Bootを使用している場合、WebClientCustomizerと同じような形でカスタマイズを適用するためのインタフェースとして、
-ReactorNettyHttpClientMapperが提供されています。
+Spring Bootを使用している場合、WebClientCustomizerと同じようなかたちでカスタマイズを適用するためのインタフェースとして、
+「ReactorNettyHttpClientMapper」が提供されています。
 
 [source, java]
 ----
@@ -212,7 +212,7 @@ public class ReactorNettyHttpClientTimeoutMapper implements ReactorNettyHttpClie
 
 HTTPクライアントを利用する際には、接続先の障害や遅延を想定し、コネクションタイムアウトやレスポンスタイムアウトを設定することが重要です。
 WebClientの場合、HttpClientのAPIを通じて各種タイムアウトを設定します。
-以下の例では、コネクションタイムアウトに10000ミリ秒（10秒）、レスポンスタイムアウトに5秒を設定しています。
+以下は、コネクションタイムアウトに10000ミリ秒（10秒）、レスポンスタイムアウトに5秒を設定している例です。
 
 [source, java]
 ----
@@ -223,10 +223,10 @@ HttpClient httpClient = HttpClient.create()
 
 === filterによる共通処理の適用
 
-WebClientでは、filterという機能を使うことによりリクエストに対して共通の処理を適用することができます。
+WebClientでは、「filter」という機能を使うことにより、リクエストに対して共通の処理を適用できます。
 
 例えば、共通のヘッダを付与するfilterは以下のように実装します。
-Builderのfilterメソッド内で定義されているラムダ関数がfilterの実態になります。
+この場合、Builderのfilterメソッド内で定義されているラムダ関数がfilterの実体になります。
 
 [source, java]
 ----
@@ -243,7 +243,7 @@ WebClient webClient = builder
 === エラーハンドリング
 
 WebClientではレスポンスのステータスコードが400番台や500番台の場合、各ステータスコードに対応した例外を発生させます。
-これらの例外はすべてWebClientResponseExceptionを継承したクラスになっており、
+これらの例外は全てWebClientResponseExceptionを継承したクラスになっており、
 エラー処理をまとめて実装することもステータスコードごとに実装することもできます。
 エラー処理の実装には、Reactorの仕組みを使います。
 Reactorでは、例外をキャッチして処理を継続するためのonErrorResumeや、
@@ -279,16 +279,16 @@ Mono<Message> message = webClient.get()
     .retryWhen(Retry.max(5));
 ----
 
-Retry.max以外にも以下のようなstaticメソッドが用意されています。
+Retry.max以外にも、以下のようなstaticメソッドが用意されています。
 
 |===
-|メソッド | リトライ方法 | リトライ間隔 | リトライ回数
+|メソッド | リトライ回数 | リトライ間隔
 
-|Retry.indefinitely | 無限にリトライします | すぐ | 無限
-|Retry.max          | 指定した回数リトライします | すぐ | 引数で指定した回数
-|Retry.maxInARow    | 連続で指定した回数エラーになるまでリトライします | すぐ | 連続で指定した回数エラーになるまで
-|Retry.fixedDelay   | 指定した間隔で指定した回数リトライします | 引数で指定した間隔 | 引数で指定した回数
-|Rtery.backoff      | 徐々にリトライ間隔を長くしながら指定した回数リトライします | 引数で指定した時間 * 2のn-1乗 + ゆらぎ（n：リトライ回数） | 引数で指定した回数
+|Retry.indefinitely | 無限 | すぐ 
+|Retry.max          | 指定した回数 | すぐ
+|Retry.maxInARow    | 連続で指定した回数エラーになるまで | すぐ
+|Retry.fixedDelay   | 指定した間隔で、指定した回数 | 引数で指定した間隔
+|Rtery.backoff      | 徐々にリトライ間隔を長くしながら、指定した回数 | 引数で指定した時間 * 2のn-1乗 + ゆらぎ（n：リトライ回数）
 |===
 
 == まとめ
