@@ -10,4 +10,4 @@
 * link:01[第1回 マイクロサービス時代のフレームワーク Spring WebFluxとは]
 * link:02[第2回 リアクティブプログラミング入門]
 * link:03[第3回 リアクティブなHTTPクライアント WebClient入門]
-* link:04[第4回 Spring WebFluxとR2DBCを使ったREST API開発]
+* link:04[第4回 リアクティブなDBアクセス R2DBC入門]
