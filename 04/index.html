@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.12">
-<title>04 Spring WebFluxとR2DBCを使ったREST API開発</title>
+<title>04 リアクティブなDBアクセス　R2DBC入門</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -438,16 +438,447 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
-<h1>04 Spring WebFluxとR2DBCを使ったREST API開発</h1>
+<h1>04 リアクティブなDBアクセス　R2DBC入門</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_r2dbcとは">1. R2DBCとは</a></li>
+<li><a href="#_r2dbcとspring_framework">2. R2DBCとSpring Framework</a>
+<ul class="sectlevel2">
+<li><a href="#_spring_r2dbc">2.1. Spring R2DBC</a></li>
+<li><a href="#_spring_data_r2dbc">2.2. Spring Data R2DBC</a></li>
+</ul>
+</li>
+<li><a href="#_r2dbcを使ったcrudの実装">3. R2DBCを使ったCRUDの実装</a>
+<ul class="sectlevel2">
+<li><a href="#_databaseclient">3.1. DatabaseClient</a></li>
+<li><a href="#_r2dbcentitytemplate">3.2. R2dbcEntityTemplate</a></li>
+<li><a href="#_reactivecrudrepository">3.3. ReactiveCrudRepository</a></li>
+<li><a href="#_トランザクション制御の実装">3.4. トランザクション制御の実装</a></li>
+<li><a href="#_コネクションプールの利用">3.5. コネクションプールの利用</a></li>
+</ul>
+</li>
+<li><a href="#_まとめ">4. まとめ</a></li>
+</ul>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>前回はAPIアクセスをノンブロッキングに実装する仕組みについて解説しましたが、
+Webアプリケーションを実装する上ではDBアクセスも欠かすことができません。
+今回はノンブロッキングなDBアクセスを実現するための仕組みであるR2DBCについて解説します。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./../images/04/overview.png" alt="overview"></span></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_r2dbcとは"><a class="anchor" href="#_r2dbcとは"></a>1. R2DBCとは</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>R2DBCは「Reactive Relational Database Connectivity」の略称で、
+リアクティブなDBアクセスを実装するためのAPIを提供するライブラリです。
+R2DBCは、JDBCと同様、共通的なインタフェースの定義と、各DBに対応するドライバの実装に分かれています。
+R2DBCでは「Service Provider Interface（SPI）」が定義され、
+各DBのドライバはそのSPIを実装する形で提供されています。
+また、R2DBCは連載第2回で紹介したReactive StreamsベースのAPIを定義しており、
+Spring WebFlux内で使われているReactorのほか、
+RxJavaなどのReactive Streams準拠のライブラリと組み合わせて使うこともできるようになっています。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_r2dbcとspring_framework"><a class="anchor" href="#_r2dbcとspring_framework"></a>2. R2DBCとSpring Framework</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring FrameworkにおいてR2DBCを使うためのライブラリはSpring R2DBCとSpring Data R2DBCの2つがあります。
+もともとはSpring Data R2DBCを中心に開発が進められていましたが、
+Spring Framework 5.3から新たにSpring R2DBCが導入され、共通的な機能はSpring R2DBCに移管されました。
+そのため、Spring Framework 5.3以降（Spring Data R2DBC 1.2以降）とそれ以前では使い方が異なる点に注意が必要です。
+本記事では、Spring Framework 5.3（Spring Data R2DBC 1.2以降）以降を前提に解説します。
+それ以前のバージョンを使用している方は、Spring Data R2DBCが提供している <a href="https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html/#migration-guide">マイグレーションガイド</a> も合わせて参照してください。</p>
+</div>
+<div class="paragraph">
+<p>Spring Bootと組み合わせて使う場合には、「spring-boot-starter-data-r2dbc」が提供されており、
+以下のように各DBのドライバと合わせて依存関係に含めることでSpring R2DBCもSpring Data R2DBCも使用することができます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-data-r2dbc&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;!-- MySQLに対応したR2DBCドライバの実装 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;dev.miku&lt;/groupId&gt;
+    &lt;artifactId&gt;r2dbc-mysql&lt;/artifactId&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spring_r2dbc"><a class="anchor" href="#_spring_r2dbc"></a>2.1. Spring R2DBC</h3>
+<div class="paragraph">
+<p>Spring R2DBCはSpring FrameworkにおいてR2DBCを使うためのコアとなるライブラリです。
+Spring R2DBCでは、基本的なDBアクセスクライアントであるDatabaseClientのほか、
+コネクションを生成するための仕組みやトランザクション管理の仕組みなどを提供しています。</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spring_data_r2dbc"><a class="anchor" href="#_spring_data_r2dbc"></a>2.2. Spring Data R2DBC</h3>
+<div class="paragraph">
+<p>Spring Data R2DBCはSpring Frameworkが提供するデータアクセスライブラリであるSpring Dataの一つで、
+Spring Data JPAやSpring Data JDBCなどと同じような形でR2DBCを扱うことができるライブラリです。
+Spring Data R2DBCでは、エンティティベースのDBアクセスクライアントであるR2dbcEntityTemplateや、
+他のSpring Dataと同様にインタフェースを定義するだけで基本的なCRUDを実装できるReactiveCrudRepositoryなどを提供しています。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_r2dbcを使ったcrudの実装"><a class="anchor" href="#_r2dbcを使ったcrudの実装"></a>3. R2DBCを使ったCRUDの実装</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ここからはSpring R2DBC、Spring Data R2DBCの機能を用いたCRUDの実装方法について解説していきます。
+Spring R2DBCのDatabaseClient、Spring Data R2DBCのR2dbcEntityTemplate、ReactiveCrudRepositoryの3つの機能について、
+それぞれCRUDの実装方法を見ていきます。
+その後、DBアクセスを実装する上で重要なトランザクション制御の実装方法およびコネクションプールの利用方法についても解説します。
+例として、以下のDDLで定義されるテーブルを使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-sql" data-lang="sql">CREATE TABLE department
+(
+    id   INT NOT NULL PRIMARY KEY,
+    name VARCHAR(256)
+);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>また、departmentテーブルに対応するエンティティクラスとして、以下のように実装されるDepartmentクラスを使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class Department {
+    private int id;
+    private String name;
 
+    public Department(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_databaseclient"><a class="anchor" href="#_databaseclient"></a>3.1. DatabaseClient</h3>
+<div class="paragraph">
+<p>DatabaseClientは3つの実装方法のうち、もっとも抽象度の低い実装方法を提供しています。
+Spring Bootとともに「spring-boot-starter-data-r2dbc」を使用している場合、
+DatabaseClientはあらかじめBean定義されているため、以下のように実装することでインスタンスを取得できます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Repository
+public class DepartmentDatabaseClientRepository {
+
+    private DatabaseClient client;
+
+    public DepartmentDatabaseClientRepository(DatabaseClient client) {
+        this.client = client;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>DatabaseClientを使用してSELECT文を実行する場合、以下のように実装します。
+まず、sqlメソッドを使い、実行するSQL文を指定します。
+この時、SQL文の中でコロンから始まるパラメータを書いておくと、
+その後でbindメソッドを使うことでパラメータの名前を指定して値を挿入することができます。
+以下の例では、「:name」という形で「name」パラメータをSQL文の中で定義し、
+続くbindメソッドで「name」パラメータに対して値を挿入しています。
+その後、mapメソッドの中でSQLの実行結果をどのように扱うかをラムダ関数として定義します。
+SQLの実行結果は1件ごとにRowクラスのインスタンスとして返ってくるため、
+そのインスタンスから値を取り出して処理を行う関数を定義します。
+以下の例では、「id」カラムの値と「name」カラムの値からDepartmentクラスのインスタンスを生成する処理を定義しています。
+最後に、allメソッドを使い、SQLの実行結果を全て取得することを指定しています。
+この場合、SQLの実行結果は複数件になることが想定されるため、返り値の型はFluxになります。
+ここで使用しているallメソッドのほか、複数件の結果のうち最初の1件のみを取得するfirstメソッドや、
+SQLの実行結果が0件または1件である場合に使用できるoneメソッドがあります。
+firstメソッド、oneメソッドの場合には返り値の型はMonoになります。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Flux&lt;Department&gt; findByName(String departmentName) {
+    return client.sql("SELECT id, name FROM department WHERE name = :name")
+            .bind("name", departmentName)
+            .map(row -&gt; {
+                int id = row.get("id", Integer.class);
+                String name = row.get("name", String.class);
+                return new Department(id, name);
+            }).all();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>INSERT文、UPDATE文、DELETE文を実行する場合、それぞれ以下のように実装します。
+sqlメソッドとbindメソッドはさきほどと同じように使用します。
+その上で、mapメソッドではなく、fetchメソッドとrowsUpdatedメソッドを使用して追加、変更、削除された行数を返します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Integer&gt; insert(Department department) {
+    return client.sql("INSERT INTO department (id, name) VALUES (:id, :name)")
+            .bind("id", department.getId())
+            .bind("name", department.getName())
+            .fetch()
+            .rowsUpdated();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Integer&gt; updateById(Department department) {
+    return client.sql("UPDATE department SET name = :name WHERE id = :id")
+            .bind("id", department.getId())
+            .bind("name", department.getName())
+            .fetch()
+            .rowsUpdated();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Integer&gt; deleteById(Department department) {
+    return client.sql("DELETE FROM department WHERE id = :id")
+            .bind("id", department.getId())
+            .fetch()
+            .rowsUpdated();
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_r2dbcentitytemplate"><a class="anchor" href="#_r2dbcentitytemplate"></a>3.2. R2dbcEntityTemplate</h3>
+<div class="paragraph">
+<p>R2dbcEntityTemplateはFluentなAPIを備え、メソッドチェインによってSQLと同等の処理を実装できる機能です。
+Spring Bootと「spring-boot-starter-data-r2dbc」を使用している場合、
+R2dbcEntityTemplateもあらかじめBean定義されており、以下のように実装することでインスタンスを取得できます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Repository
+public class DepartmentEntityTemplateRepository {
+    private R2dbcEntityTemplate template;
+
+    public DepartmentEntityTemplateRepository(R2dbcEntityTemplate template) {
+        this.template = template;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>R2dbcEntityTemplateでは、SQL文に対応したメソッドが用意されており、
+そのメソッドを起点に処理を実装します。
+SELECT文の場合、selectメソッドが起点になります。
+selectメソッドの引数にはエンティティのクラスを指定します。
+次に、fromメソッドを使用してテーブル名を指定します。
+なお、テーブル名を指定しない場合には、selectメソッドの引数で指定したクラス名からテーブル名が類推されます。
+その後、matchingメソッドで検索条件を指定します。
+検索条件を定義するためのstaticメソッドが各種用意されており、それらを使って柔軟に検索条件を記述することができます。
+以下の例では、「WHERE name = :name ORDER BY id DESC」相当の検索条件を記述しています。
+最後に、allメソッドを使用してSQLの実行結果を全て受け取ります。
+allメソッドの以外にも、DatabaseClientと同様にfirstメソッドやoneメソッドが提供されているほか、
+R2dbcEntityTemplateでは件数を取得するcountメソッドや結果が1件以上あるかどうかを返すexistsメソッドなども提供されています。</p>
+</div>
+<div class="paragraph">
+<p>なお、R2dbcEntityTemplateは現状1つのテーブルを対象とする操作のみが実装されており、
+JOINや副問い合わせといった複雑なSQLと同等の処理を実現できません。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Flux&lt;Department&gt; findByName(String name) {
+    return template.select(Department.class)
+            .from("department")
+            .matching(query(where("name").is(name)).sort(by(desc("id"))))
+            .all();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>INSERT文では、insertメソッドが起点になります。
+テーブル名を指定する場合には、SQLの記法に合わせてintoメソッドを使用します。
+追加するレコードの内容はusingメソッドを使用してエンティティのオブジェクトを渡します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Department&gt; insert(Department department) {
+    return template.insert(Department.class)
+            .into("department")
+            .using(department);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>UPDATE文では、updateメソッドが起点になります。
+テーブル名の指定にはinTableメソッドを使用します。
+SQLのWHERE句にあたる部分は、SELECTの時と同様にmatchingメソッドを使用します。
+更新内容はapplyメソッド、updateメソッドを用いて指定します。
+updateメソッドの引数には更新対象のカラム名と更新に用いる値を指定します。
+複数カラムをまとめて更新したい場合には、updateメソッドに続けてsetメソッドを使用することで、別のカラムに対する更新内容を定義できます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Integer&gt; updateById(Department department) {
+    return template.update(Department.class)
+            .inTable("department")
+            .matching(query(where("id").is(department.getId())))
+            .apply(update("name", department.getName()));
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>DELETE文では、deleteメソッドが起点になります。
+テーブル名の指定にはfromメソッドを使用します。
+SQLのWHERE句にあたる部分は、SELECT、UPDATEと同様にmatchingメソッドを使用します。
+最後にallメソッドを使用して条件に合致するレコードを全て削除することを指定します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Integer&gt; deleteById(Department department) {
+    return template.delete(Department.class)
+            .from("department")
+            .matching(query(where("id").is(department.getId())))
+            .all();
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reactivecrudrepository"><a class="anchor" href="#_reactivecrudrepository"></a>3.3. ReactiveCrudRepository</h3>
+<div class="paragraph">
+<p>ReactiveCrudRepositoryは、このインタフェースを継承したインタフェースを定義するだけで基本的なCRUDの実装を自動的に生成する機能です。
+以下のように、ReactiveCrudRepositoryインタフェースを継承したインタフェースを定義します。
+その際、ReactiveCrudRepositoryのジェネリクスにはエンティティクラスと主キーとなるカラムの型を指定します。
+これだけで基本的なCRUDを実現することができます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Repository
+public interface DepartmentCrudRepository extends ReactiveCrudRepository&lt;Department, Integer&gt; {
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>この機能を利用する場合、以下のように定義したインタフェースの型でインジェクションを行い、インスタンスを取得します。
+これにより、主キーを使ったSELECT文を発行するfindByIdメソッドや、INSERT文もしくはUPDATE文を発行するsaveメソッドなどを使用できます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Service
+public class DepartmentCrudService {
+
+    DepartmentCrudRepository departmentCrudRepository;
+
+    public DepartmentCrudService(DepartmentCrudRepository departmentCrudRepository) {
+        this.departmentCrudRepository = departmentCrudRepository;
+    }
+
+    public Mono&lt;Department&gt; findById(int id) {
+        return departmentCrudRepository.findById(id);
+    }
+
+    public Mono&lt;Department&gt; save(Department department) {
+        return departmentCrudRepository.save(department);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ReactiveCrudRepositoryが標準で用意しているメソッド以外の機能を実装したい場合、
+以下のようにインタフェースの中でメソッドを定義することによって実現できます。
+この時発行されるSQL文はメソッド名から一定のルールに従って生成されます。
+以下の例では、検索条件が「WHERE name = :name」となるSQL文が実行されます。
+詳しいルールについては <a href="https://docs.spring.io/spring-data/r2dbc/docs/current/reference/html/#r2dbc.repositories.queries">公式ドキュメント</a> を参照してください。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Repository
+public interface DepartmentCrudRepository extends ReactiveCrudRepository&lt;Department, Integer&gt; {
+    Flux&lt;Department&gt; findByName(String name);
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_トランザクション制御の実装"><a class="anchor" href="#_トランザクション制御の実装"></a>3.4. トランザクション制御の実装</h3>
+<div class="paragraph">
+<p>Spring R2DBC、Spring Data R2DBCを利用する場合、従来のJDBCの時と同様、非常に簡単にトランザクション制御を実装できます。
+Spring R2DBCがSpring Frameworkの仕組みに準拠したトランザクションマネージャの実装を提供しているため、
+@Transactionalアノテーションをメソッドに付与するだけでトランザクション制御を実装できます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Service
+public class DepartmentCrudService {
+
+    @Transactional
+    public Mono&lt;Department&gt; save(Department department) {
+        return departmentCrudRepository.save(department);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_コネクションプールの利用"><a class="anchor" href="#_コネクションプールの利用"></a>3.5. コネクションプールの利用</h3>
+<div class="paragraph">
+<p>R2DBCではr2dbc-poolというコネクションプールの実装が提供されています。
+Spring BootとSpring R2DBC、Spring Data R2DBCを組み合わせて利用している場合、
+R2DBC接続文字列として以下のように「r2dbc:pool:」から始まる文字列を設定すると、
+Spring Bootが自動的にコネクションプールを有効化します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">spring:
+  r2dbc:
+    url: r2dbc:pool:mysql://localhost:3306/sandbox</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_まとめ"><a class="anchor" href="#_まとめ"></a>4. まとめ</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>今回はノンブロッキングなDBアクセスを実現する技術であるR2DBCと、
+それをSpring Frameworkの中で利用するためのライブラリについて解説しました。</p>
+</div>
+<div class="paragraph">
+<p>これまで4回にわたり、リアクティブなWebアプリケーションを実装するためのフレームワークであるSpring WebFluxを中心として、
+リアクティブプログラミング、リアクティブなHTTPクライアント、リアクティブなDBアクセス技術の基本について解説してきました。
+本連載の内容を参考に、ぜひリアクティブな技術を活用していってください。</p>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-02-12 15:15:23 UTC
+Last updated 2021-04-12 08:55:01 UTC
 </div>
 </div>
 </body>
