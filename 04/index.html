@@ -742,38 +742,56 @@ JOINや副問い合わせといった複雑なSQLと同等の処理は実現で�
 </div>
 </div>
 <div class="paragraph">
-<p>UPDATE文では、updateメソッドが起点になります。
-テーブル名の指定にはinTableメソッドを使用します。
-SQLのWHERE句にあたる部分は、SELECTの時と同様にmatchingメソッドを使用します。
-更新内容はapplyメソッド、updateメソッドを用いて指定します。
-updateメソッドの引数には更新対象のカラム名と更新に用いる値を指定します。
-複数カラムをまとめて更新したい場合には、updateメソッドに続けてsetメソッドを使用することで、別のカラムに対する更新内容を定義できます。</p>
+<p>UPDATE文では、updateメソッドを起点に以下のように実装します。</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Integer&gt; updateById(Department department) {
     return template.update(Department.class)
-            .inTable("department")
-            .matching(query(where("id").is(department.getId())))
-            .apply(update("name", department.getName()));
+            .inTable("department")                                // <b class="conum">(1)</b>
+            .matching(query(where("id").is(department.getId())))  // <b class="conum">(2)</b>
+            .apply(update("name", department.getName()));         // <b class="conum">(3)</b>
 }</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>テーブル名の指定にはinTableメソッドを使用します。</p>
+</li>
+<li>
+<p>SQLのWHERE句にあたる部分は、SELECTの時と同様にmatchingメソッドを使用します。</p>
+</li>
+<li>
+<p>更新内容はapplyメソッド、updateメソッドを用いて指定します。updateメソッドの引数には更新対象のカラム名と更新に用いる値を指定します。複数カラムをまとめて更新したい場合には、updateメソッドに続けてsetメソッドを使用することで、別のカラムに対する更新内容を定義できます。</p>
+</li>
+</ol>
+</div>
 <div class="paragraph">
-<p>DELETE文では、deleteメソッドが起点になります。
-テーブル名の指定にはfromメソッドを使用します。
-SQLのWHERE句にあたる部分は、SELECT、UPDATEと同様にmatchingメソッドを使用します。
-最後にallメソッドを使用して条件に合致するレコードを全て削除することを指定します。</p>
+<p>DELETE文では、deleteメソッドを起点に以下のように実装します。</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-java" data-lang="java">public Mono&lt;Integer&gt; deleteById(Department department) {
     return template.delete(Department.class)
-            .from("department")
-            .matching(query(where("id").is(department.getId())))
-            .all();
+            .from("department")                                   // <b class="conum">(1)</b>
+            .matching(query(where("id").is(department.getId())))  // <b class="conum">(2)</b>
+            .all();                                               // <b class="conum">(3)</b>
 }</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>テーブル名の指定にはfromメソッドを使用します。</p>
+</li>
+<li>
+<p>SQLのWHERE句にあたる部分は、SELECT、UPDATEと同様にmatchingメソッドを使用します。</p>
+</li>
+<li>
+<p>allメソッドを使用して条件に合致するレコードを全て削除することを指定します。</p>
+</li>
+</ol>
 </div>
 </div>
 <div class="sect2">
@@ -887,7 +905,7 @@ Spring Bootが自動的にコネクションプールを有効化します。</p
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-04-14 07:29:34 UTC
+Last updated 2021-04-14 07:36:59 UTC
 </div>
 </div>
 </body>
