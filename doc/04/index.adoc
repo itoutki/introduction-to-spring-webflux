@@ -125,33 +125,23 @@ public class DepartmentDatabaseClientRepository {
 ----
 
 DatabaseClientを使用してSELECT文を実行する場合、以下のように実装します。
-まず、sqlメソッドを使い、実行するSQL文を指定します。
-この時、SQL文の中でコロンから始まるパラメータを書いておくと、
-その後でbindメソッドを使うことでパラメータの名前を指定して値を挿入することができます。
-以下の例では、「:name」という形で「name」パラメータをSQL文の中で定義し、
-続くbindメソッドで「name」パラメータに対して値を挿入しています。
-その後、mapメソッドの中でSQLの実行結果をどのように扱うかをラムダ関数として定義します。
-SQLの実行結果は1件ごとにRowクラスのインスタンスとして返ってくるため、
-そのインスタンスから値を取り出して処理を行う関数を定義します。
-以下の例では、「id」カラムの値と「name」カラムの値からDepartmentクラスのインスタンスを生成する処理を定義しています。
-最後に、allメソッドを使い、SQLの実行結果を全て取得することを指定しています。
-この場合、SQLの実行結果は複数件になることが想定されるため、返り値の型はFluxになります。
-ここで使用しているallメソッドのほか、複数件の結果のうち最初の1件のみを取得するfirstメソッドや、
-SQLの実行結果が0件または1件である場合に使用できるoneメソッドがあります。
-firstメソッド、oneメソッドの場合には返り値の型はMonoになります。
 
 [source, java]
 ----
 public Flux<Department> findByName(String departmentName) {
-    return client.sql("SELECT id, name FROM department WHERE name = :name")
-            .bind("name", departmentName)
-            .map(row -> {
+    return client.sql("SELECT id, name FROM department WHERE name = :name")  // <1>
+            .bind("name", departmentName)                                    // <2>
+            .map(row -> {                                                    // <3>
                 int id = row.get("id", Integer.class);
                 String name = row.get("name", String.class);
                 return new Department(id, name);
-            }).all();
+            }).all();                                                        // <4>
 }
 ----
+<1> sqlメソッドを使い、実行するSQL文を指定します。この時コロンから始まるパラメータを書いておくと、あとで値を挿入できます。
+<2> bindメソッドを使い、前述のSQL文内で指定したパラメータに対して値を挿入します。
+<3> mapメソッドの中でSQLの実行結果（Rowクラスのインスタンス）を変換するためのラムダ関数を定義します。
+<4> allメソッドを使い、実行結果を全て取得することを指定します。そのほか、最初の1件のみを取得するfirstメソッドや、結果が0または1件の場合に使用するoneメソッドがあります。
 
 INSERT文、UPDATE文、DELETE文を実行する場合、それぞれ以下のように実装します。
 sqlメソッドとbindメソッドはさきほどと同じように使用します。
@@ -209,29 +199,24 @@ public class DepartmentEntityTemplateRepository {
 
 R2dbcEntityTemplateでは、SQL文に対応したメソッドが用意されており、
 そのメソッドを起点に処理を実装します。
-SELECT文の場合、selectメソッドが起点になります。
-selectメソッドの引数にはエンティティのクラスを指定します。
-次に、fromメソッドを使用してテーブル名を指定します。
-なお、テーブル名を指定しない場合には、selectメソッドの引数で指定したクラス名からテーブル名が類推されます。
-その後、matchingメソッドで検索条件を指定します。
-検索条件を定義するためのstaticメソッドが各種用意されており、それらを使って柔軟に検索条件を記述することができます。
-以下の例では、「WHERE name = :name ORDER BY id DESC」相当の検索条件を記述しています。
-最後に、allメソッドを使用してSQLの実行結果を全て受け取ります。
-allメソッドの以外にも、DatabaseClientと同様にfirstメソッドやoneメソッドが提供されているほか、
-R2dbcEntityTemplateでは件数を取得するcountメソッドや結果が1件以上あるかどうかを返すexistsメソッドなども提供されています。
+SELECT文の場合、selectメソッドが起点に以下のように実装します。
 
 なお、R2dbcEntityTemplateは現状1つのテーブルを対象とする操作のみが実装されており、
-JOINや副問い合わせといった複雑なSQLと同等の処理を実現できません。
+JOINや副問い合わせといった複雑なSQLと同等の処理は実現できません。
 
 [source, java]
 ----
 public Flux<Department> findByName(String name) {
-    return template.select(Department.class)
-            .from("department")
-            .matching(query(where("name").is(name)).sort(by(desc("id"))))
-            .all();
+    return template.select(Department.class)                               // <1>
+            .from("department")                                            // <2>
+            .matching(query(where("name").is(name)).sort(by(desc("id"))))  // <3>
+            .all();                                                        // <4>
 }
 ----
+<1> selectメソッドの引数にはエンティティのクラスを指定します。
+<2> fromメソッドを使い、テーブル名を指定します。指定しない場合にはエンティティクラス名からテーブル名が類推されます。
+<3> matchingメソッドおよび各種staticメソッドを使用して検索条件を指定します。ここでは、「WHERE name = :name ORDER BY id DESC」相当の条件を指定しています。
+<4> allメソッドを使用して実行結果を全て取得することを指定します。このほか、件数のみを取得するcountメソッドや結果が1件以上あるかどうかを返すexistsメソッドなどがあります。
 
 INSERT文では、insertメソッドが起点になります。
 テーブル名を指定する場合には、SQLの記法に合わせてintoメソッドを使用します。
