@@ -231,37 +231,37 @@ public Mono<Department> insert(Department department) {
 }
 ----
 
-UPDATE文では、updateメソッドが起点になります。
-テーブル名の指定にはinTableメソッドを使用します。
-SQLのWHERE句にあたる部分は、SELECTの時と同様にmatchingメソッドを使用します。
-更新内容はapplyメソッド、updateメソッドを用いて指定します。
-updateメソッドの引数には更新対象のカラム名と更新に用いる値を指定します。
-複数カラムをまとめて更新したい場合には、updateメソッドに続けてsetメソッドを使用することで、別のカラムに対する更新内容を定義できます。
+UPDATE文では、updateメソッドを起点に以下のように実装します。
 
 [source, java]
 ----
 public Mono<Integer> updateById(Department department) {
     return template.update(Department.class)
-            .inTable("department")
-            .matching(query(where("id").is(department.getId())))
-            .apply(update("name", department.getName()));
+            .inTable("department")                                // <1>
+            .matching(query(where("id").is(department.getId())))  // <2>
+            .apply(update("name", department.getName()));         // <3>
 }
 ----
+<1> テーブル名の指定にはinTableメソッドを使用します。
+<2> SQLのWHERE句にあたる部分は、SELECTの時と同様にmatchingメソッドを使用します。
+<3> 更新内容はapplyメソッド、updateメソッドを用いて指定します。updateメソッドの引数には更新対象のカラム名と更新に用いる値を指定します。複数カラムをまとめて更新したい場合には、updateメソッドに続けてsetメソッドを使用することで、別のカラムに対する更新内容を定義できます。
 
-DELETE文では、deleteメソッドが起点になります。
-テーブル名の指定にはfromメソッドを使用します。
-SQLのWHERE句にあたる部分は、SELECT、UPDATEと同様にmatchingメソッドを使用します。
-最後にallメソッドを使用して条件に合致するレコードを全て削除することを指定します。
+
+DELETE文では、deleteメソッドを起点に以下のように実装します。
 
 [source, java]
 ----
 public Mono<Integer> deleteById(Department department) {
     return template.delete(Department.class)
-            .from("department")
-            .matching(query(where("id").is(department.getId())))
-            .all();
+            .from("department")                                   // <1>
+            .matching(query(where("id").is(department.getId())))  // <2>
+            .all();                                               // <3>
 }
 ----
+<1> テーブル名の指定にはfromメソッドを使用します。
+<2> SQLのWHERE句にあたる部分は、SELECT、UPDATEと同様にmatchingメソッドを使用します。
+<3> allメソッドを使用して条件に合致するレコードを全て削除することを指定します。
+
 
 === ReactiveCrudRepository
 
